@@ -1006,6 +1006,57 @@ body.dashfit .bi{gap:16px}
   .pap-a{grid-column:1/-1;justify-content:flex-end}
 }
 #toast{width:max-content;max-width:calc(100vw - 32px)}
+/* ── Bandeja de Mejora en filas ── */
+.ofl{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(4,minmax(0,1fr));gap:8px;margin:0 2px 14px}
+.ofl .search input{height:42px}
+.ofl .sel{height:42px;width:100%;box-shadow:none;background-color:var(--wash);font-size:13.5px}
+.ol{display:grid;gap:8px}
+.orow{display:grid;grid-template-columns:60px minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:10px 12px 10px 10px;border-radius:16px;background:#fff;box-shadow:var(--sh-1),0 0 0 1px var(--line);position:relative;transition:box-shadow .25s,transform .3s cubic-bezier(.22,1,.36,1);animation:kin .4s cubic-bezier(.22,1,.36,1) both}
+.orow::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 3px 3px 0;background:#6B48C8}
+.orow.nc::before{background:var(--nc)}
+.orow:hover{box-shadow:0 14px 30px -20px rgba(14,26,51,.4),0 0 0 1px #D3DBEA}
+.or-ph{position:relative;width:60px;height:60px;border-radius:12px;overflow:hidden;background:#EEF1F6;display:block;flex:none}
+.or-ph img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.or-ph:hover img{transform:scale(1.08)}
+.or-ph em{position:absolute;right:4px;bottom:4px;font-style:normal;font-size:10.5px;font-weight:800;color:#fff;background:rgba(14,26,51,.65);padding:1px 6px;border-radius:99px}
+.or-ph.nof{display:grid;place-items:center;color:#A3AEC2;background:repeating-linear-gradient(135deg,#F3F5FA 0 8px,#EEF1F6 8px 16px)}.or-ph.nof svg{width:20px;height:20px}
+.or-b{min-width:0;display:grid;gap:5px}
+.or-t{display:flex;gap:8px;align-items:flex-start;min-width:0}
+.or-t .pill{height:22px;font-size:11.5px;padding:0 9px;flex:none;margin-top:1px}
+.or-t b{font-size:14px;font-weight:700;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.or-m{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);font-weight:600;min-width:0;white-space:nowrap;overflow:hidden}
+.or-m img{height:14px;width:auto;max-width:40px;object-fit:contain;flex:none}
+.or-m span{overflow:hidden;text-overflow:ellipsis;flex:none;max-width:40%}.or-m .it{flex:1 1 auto;max-width:none;font-weight:500}
+.or-m .dot{width:3px;height:3px;border-radius:50%;background:#C3CBD9;flex:none}
+.orow .age{font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:99px;background:var(--wash);color:var(--muted);white-space:nowrap}
+.orow .age.old{background:var(--nc-bg);color:var(--nc-ink)}.orow .age.mid{background:var(--warn-bg);color:var(--warn)}
+.or-a{display:flex;gap:6px;align-items:center}
+.or-a .iconbtn{width:36px;height:36px;border-radius:11px}
+.or-a .btn{height:36px;padding:0 14px;font-size:13px}
+.orow.out{animation:bye .32s cubic-bezier(.4,0,.2,1) forwards}
+@media (max-width:1100px){.ofl{grid-template-columns:1fr 1fr}.ofl .search{grid-column:1/-1}}
+@media (max-width:760px){
+  .orow{grid-template-columns:54px minmax(0,1fr) auto;gap:6px 12px;padding:10px}
+  .or-ph{width:54px;height:54px;grid-row:span 2}
+  .or-t b{font-size:13.5px}
+  .orow .age{grid-column:3;grid-row:1;align-self:start}
+  .or-a{grid-column:2/-1;grid-row:2;justify-content:flex-end}
+  .or-m span{max-width:none}.or-m .it{display:none}
+  .or-t{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.or-t .pill{display:inline-flex;margin-right:6px;vertical-align:1px}.or-t b{display:inline;-webkit-line-clamp:unset}
+  .or-m span:not(:first-of-type),.or-m .dot{display:none}
+  .pgx-h small{display:none}.pgx-h{padding-bottom:10px}
+}
+/* ── Fila en curso en celular ── */
+@media (max-width:760px){
+  .irow.curso{grid-template-columns:54px minmax(0,1fr) auto;grid-template-areas:"lg in rg" "lg ac dl";gap:10px 12px;align-items:center}
+  .irow.curso .ilogo{grid-area:lg;align-self:start}
+  .irow.curso>span:nth-child(2){grid-area:in}
+  .irow.curso .ring{grid-area:rg;width:48px;height:48px}.irow.curso .ring b{font-size:12px}
+  .irow.curso .cont{grid-area:ac;justify-self:start;height:36px;padding:0 14px;font-size:13px}
+  .irow.curso .idel{grid-area:dl;justify-self:center;opacity:1}
+  .irow.curso .est{display:none}
+  .irow b{font-size:14.5px}.irow small{font-size:12.5px}
+}
 </style>
 </head>
 <body>
@@ -1427,7 +1478,7 @@ db.ref('.info/connected').on('value', s => {
   $('#connTx').textContent = on ? 'Sincronizado en tiempo real' : 'Sin conexión · cambios en espera';
 });
 function afterProfile() {
-  renderMe();
+  renderMe(); try { if (PROF && ME) localStorage.setItem('copasst_me', JSON.stringify({ uid: ME.uid, nombre: PROF.nombre || '', empresas: PROF.empresas || {} })); } catch (e) { }
   if (!PROF || !PROF.nombre) { if (!profAsked) { profAsked = true; openProfile(true); } return; }
   const nx = new URLSearchParams(location.search).get('next');
   if (nx && /^[\w\-]+\.html(\?[\w=&%\-]*)?$/.test(nx)) location.replace(nx);
@@ -1592,7 +1643,7 @@ function buildResumen() {
   setActs('');
   $('#view').innerHTML = `
     <section class="welcome"><div><small>COPASST Software</small><h1 id="wHi"></h1><p id="wTx"></p></div>
-      <div class="acts"><a class="btn" href="${LISTA_URL}">${ico('shield')}Nueva inspección</a><button class="btn pri" data-act="new2">${ico('plus')}Nueva tarea</button></div></section>
+      <div class="acts"><a class="btn" href="${LISTA_URL}?nueva=1">${ico('shield')}Nueva inspección</a><button class="btn pri" data-act="new2">${ico('plus')}Nueva tarea</button></div></section>
     <div class="kpis" id="rKpi"></div>
     <div class="subs" id="rSubs"></div>
     <div class="g2">
@@ -2020,9 +2071,9 @@ const REP = { fmt: 'pdf', tit: 'Informe consolidado de inspecciones de condicion
 const isCurso = x => x.estado === 'curso';
 const paneEnter = () => { const pn = $('#iPane'); if (!pn) return; pn.style.animation = 'none'; void pn.offsetWidth; pn.style.animation = ''; };
 function buildInsp() {
-  setActs(`<a class="btn pri" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a>`); ipane = null;
+  setActs(`<a class="btn pri" href="${LISTA_URL}?nueva=1">${ico('plus')}Nueva inspección</a>`); ipane = null;
   $('#view').innerHTML = `
-    <div class="itop"><div class="seg" id="iTabs">${[['reg', 'Registros', 'shield'], ['dash', 'Dashboard', 'chart']].map(([k, n, i]) => `<button class="fchip" data-t="${k}" aria-pressed="false">${ico(i)}${n}</button>`).join('')}</div><button class="btn sm ptog" id="iPap" type="button" title="Papelera">${ico('trash')}<span class="lf">Papelera</span><b class="papn" hidden>0</b></button><button class="btn sm ftog" id="iFt" type="button" aria-label="Filtros" title="Filtros">${ico('funnel')}</button><a class="btn pri itop-n" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a></div>
+    <div class="itop"><div class="seg" id="iTabs">${[['reg', 'Registros', 'shield'], ['dash', 'Dashboard', 'chart']].map(([k, n, i]) => `<button class="fchip" data-t="${k}" aria-pressed="false">${ico(i)}${n}</button>`).join('')}</div><button class="btn sm ptog" id="iPap" type="button" title="Papelera">${ico('trash')}<span class="lf">Papelera</span><b class="papn" hidden>0</b></button><button class="btn sm ftog" id="iFt" type="button" aria-label="Filtros" title="Filtros">${ico('funnel')}</button><a class="btn pri itop-n" href="${LISTA_URL}?nueva=1">${ico('plus')}Nueva inspección</a></div>
     <div class="ibar" id="iBar"><div class="ents">${[['all', 'Todas'], ...Object.keys(SEDES).map(k => [k, k])].map(([k, n]) => `<button class="ent" data-e="${k}" aria-pressed="false" title="${k === 'all' ? 'Todas las empresas' : EMP_N[k]}">${k === 'all' ? `<span>${ico('shield')}Todas</span>` : `<img src="${LOGOS[k]}" alt="${n}">`}</button>`).join('')}</div>
       <div class="isels"><select class="sel" id="iSede" aria-label="Sede"></select><select class="sel" id="iArea" aria-label="Área"></select><select class="sel" id="iYear" aria-label="Año"></select><select class="sel" id="iMes" aria-label="Mes"></select></div></div>
     <div id="iPane"></div>`;
@@ -2167,7 +2218,7 @@ function drawReg(base0) {
   ].map(([i, v, l, b, f]) => `<div class="st" style="--sb:${b};--sf:${f}"><span class="ic">${ico(i)}</span><div><b>${v}</b><small>${l}</small></div></div>`).join(''));
   setH($('#rgEst'), [['', 'Todas', base.length], ['curso', 'En curso', cur.length], ['comp', 'Realizadas', done.length]].map(([k, n, c]) => `<button class="fchip" data-k="${k}" aria-pressed="${FI.est === k}">${n} <b>${c}</b></button>`).join(''));
   $$('#rgEst .fchip').forEach(b => b.onclick = () => { FI.est = b.dataset.k; drawReg(filtI()); });
-  if (!L.length) { $('#rgList').innerHTML = `<div class="card"><div class="empty" style="padding:48px 16px"><b>${RV === 'mine' ? 'Aún no tienes inspecciones con estos filtros' : 'No hay inspecciones con estos filtros'}</b>Las inspecciones iniciadas desde la lista de verificación aparecerán aquí.<div style="margin-top:16px"><a class="btn pri" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a></div></div></div>`; return; }
+  if (!L.length) { $('#rgList').innerHTML = `<div class="card"><div class="empty" style="padding:48px 16px"><b>${RV === 'mine' ? 'Aún no tienes inspecciones con estos filtros' : 'No hay inspecciones con estos filtros'}</b>Las inspecciones iniciadas desde la lista de verificación aparecerán aquí.<div style="margin-top:16px"><a class="btn pri" href="${LISTA_URL}?nueva=1">${ico('plus')}Nueva inspección</a></div></div></div>`; return; }
   const CU = L.filter(isCurso), DN = L.filter(x => !isCurso(x));
   let html = '', g = '';
   L.forEach(x => {
@@ -2562,7 +2613,7 @@ $('#inDel').onclick = async () => {
 };
 
 /* ── Mejora: oportunidades y hallazgos con su foto, para que el subcomité los gestione ── */
-const MJ = { tipo: 'all', emp: 'all', more: false, v: '' };
+const MJ = { tipo: 'all', emp: 'all', sede: '', cat: '', area: '', q: '', ord: 'new', more: false, v: '' };
 function omPreset(iid, k, kind) {
   const x = I[iid], it = x.items[k], isOm = kind === 'om', ref0 = `${x.sede}${x.area ? ' · ' + x.area : ''} · ${fd(x.fecha)}`;
   return { sub: 'mej', tipo: 'oportunidad', all: true, prioridad: isOm ? 'media' : 'alta', fechaLimite: addDays(today(), isOm ? 30 : 15),
@@ -2587,7 +2638,11 @@ function buildMejora() {
 }
 function drawMjPane() {
   const pane = $('#mjPane'); document.body.classList.toggle('dashfit', MJ.v === 'dash' && innerWidth > 1000);
-  if (MJ.v === 'pend') pane.innerHTML = `<section class="pgx"><div class="pgx-h"><span class="ic">${ico('bulb')}</span><div><b>Bandeja por gestionar</b><small>Hallazgos «No cumple» y oportunidades de mejora de las inspecciones realizadas. Al gestionarlas se convierten en tareas del Subcomité de Mejora.</small></div></div><div class="pgx-tools"><span class="seg" id="mjTipo"></span><span class="mjemp" id="mjEmp"></span></div><div class="pgx-l" id="mjPend"></div><div id="mjMore" style="text-align:center;margin-top:14px"></div></section>`;
+  if (MJ.v === 'pend') pane.innerHTML = `<section class="pgx"><div class="pgx-h"><span class="ic">${ico('bulb')}</span><div><b>Bandeja por gestionar</b><small>Hallazgos «No cumple» y oportunidades de mejora de las inspecciones realizadas. Al gestionarlas se convierten en tareas del Subcomité de Mejora.</small></div></div><div class="pgx-tools"><span class="seg" id="mjTipo"></span><span class="mjemp" id="mjEmp"></span></div>
+      <div class="ofl"><label class="search"><span class="sr">Buscar</span>${ico('search')}<input id="mjQ" type="search" placeholder="Buscar hallazgo, ítem u observación" autocomplete="off"></label><select class="sel" id="mjSede" aria-label="Sede"></select><select class="sel" id="mjCat" aria-label="Categoría"></select><select class="sel" id="mjArea" aria-label="Área"></select><select class="sel" id="mjOrd" aria-label="Orden"><option value="new">Más recientes</option><option value="old">Más antiguas</option><option value="cat">Por categoría</option><option value="sede">Por sede</option></select></div>
+      <div class="ol" id="mjPend"></div><div id="mjMore" style="text-align:center;margin-top:14px"></div></section>`;
+  if (MJ.v === 'pend') { $('#mjQ').value = MJ.q; $('#mjQ').oninput = e => { MJ.q = e.target.value; MJ.more = false; updMejora(); };
+    [['#mjSede', 'sede'], ['#mjCat', 'cat'], ['#mjArea', 'area'], ['#mjOrd', 'ord']].forEach(([s, k]) => $(s).onchange = e => { MJ[k] = e.target.value; MJ.more = false; updMejora(); }); }
   else if (MJ.v === 'dash') {
     ['mjmes', 'mjdon'].forEach(k => chart(k));
     pane.innerHTML = `<div class="ibar" id="mdBar"><div class="ents" id="mdEnt"></div><div class="isels"><select class="sel" id="mdYear" aria-label="Año"></select><select class="sel" id="mdMes" aria-label="Mes"></select></div></div>
@@ -2851,29 +2906,31 @@ function updMejora() {
   $('#mjK').hidden = MJ.v === 'dash';
   if (MJ.v === 'dash') { updMjDash(); return; }
   if (MJ.v !== 'pend') { updBoardCols(tasks()); return; }
-  const P0 = pend.filter(z => MJ.emp === 'all' || z.x.empresa === MJ.emp), L = P0.filter(z => MJ.tipo === 'all' || z.kind === MJ.tipo), show = MJ.more ? L : L.slice(0, 12);
-  $('#mjEmp').innerHTML = [['all', 'Todas'], ...EMPS.filter(k => pend.some(z => z.x.empresa === k)).map(k => [k, k])].map(([k, n]) => `<button type="button" data-e="${k}" aria-pressed="${MJ.emp === k}" title="${k === 'all' ? 'Todas las empresas' : EMP_N[k]}">${k === 'all' ? n : `<img src="${LOGOS[k]}" alt="${k}">`}</button>`).join('');
-  $$('#mjEmp button').forEach(b => b.onclick = () => { MJ.emp = b.dataset.e; MJ.more = false; updMejora(); });
-  $('#mjTipo').innerHTML = [['all', 'Todas', P0.length], ['nc', 'No cumple', P0.filter(z => z.kind === 'nc').length], ['om', 'Oportunidades', P0.filter(z => z.kind === 'om').length]].map(([k, n, c]) => `<button class="fchip" data-k="${k}" aria-pressed="${MJ.tipo === k}">${n} <b>${c}</b></button>`).join('');
+  const q = MJ.q.trim().toLowerCase();
+  const P0 = pend.filter(z => (MJ.emp === 'all' || z.x.empresa === MJ.emp) && (!MJ.sede || z.x.sede === MJ.sede) && (!MJ.cat || z.it.catNombre === MJ.cat) && (!MJ.area || (z.x.area || '') === MJ.area)
+    && (!q || [z.it.pregunta, z.it.om, z.it.obs, z.x.sede, z.x.area, z.it.catNombre].join(' ').toLowerCase().includes(q)));
+  const L = P0.filter(z => MJ.tipo === 'all' || z.kind === MJ.tipo).sort(MJ.ord === 'old' ? (a, b) => (a.x.fecha || '').localeCompare(b.x.fecha || '') : MJ.ord === 'cat' ? (a, b) => (a.it.catNombre || '').localeCompare(b.it.catNombre || '') || (b.x.fecha || '').localeCompare(a.x.fecha || '') : MJ.ord === 'sede' ? (a, b) => (a.x.sede || '').localeCompare(b.x.sede || '') || (b.x.fecha || '').localeCompare(a.x.fecha || '') : (a, b) => (b.x.fecha || '').localeCompare(a.x.fecha || '') || (a.it.ord || 0) - (b.it.ord || 0));
+  const show = MJ.more ? L : L.slice(0, 30);
+  setH($('#mjEmp'), [['all', 'Todas'], ...EMPS.filter(k => pend.some(z => z.x.empresa === k)).map(k => [k, k])].map(([k, n]) => `<button type="button" data-e="${k}" aria-pressed="${MJ.emp === k}" title="${k === 'all' ? 'Todas las empresas' : EMP_N[k]}">${k === 'all' ? n : `<img src="${LOGOS[k]}" alt="${k}">`}</button>`).join(''));
+  $$('#mjEmp button').forEach(b => b.onclick = () => { MJ.emp = b.dataset.e; MJ.sede = ''; MJ.more = false; updMejora(); });
+  setH($('#mjTipo'), [['all', 'Todas', P0.length], ['nc', 'No cumple', P0.filter(z => z.kind === 'nc').length], ['om', 'Oportunidades', P0.filter(z => z.kind === 'om').length]].map(([k, n, c]) => `<button class="fchip" data-k="${k}" aria-pressed="${MJ.tipo === k}">${n} <b>${c}</b></button>`).join(''));
   $$('#mjTipo .fchip').forEach(b => b.onclick = () => { MJ.tipo = b.dataset.k; MJ.more = false; updMejora(); });
-  const key = z => z.x.id + '|' + z.k + '|' + z.kind, box = $('#mjPend'), now = new Set(show.map(key));
-  const gone = $$('.og', box).filter(c => !now.has(c.dataset.key));
-  if (gone.length && !MJ.anim) { MJ.anim = true; gone.forEach(c => c.classList.add('out')); setTimeout(() => { MJ.anim = false; updMejora(); }, 420); return; }
-  const have = new Set($$('.og', box).map(c => c.dataset.key));
-  const html = show.map((z, n) => {
-    const { x, k, kind, it } = z, f = it.fotos || [], txt = kind === 'om' ? it.om : it.pregunta;
-    return `<article class="og ${kind}" data-key="${esc(key(z))}" data-i="${x.id}" data-k="${k}" data-kind="${kind}" style="${have.has(key(z)) ? 'animation:none' : `animation-delay:${Math.min(n, 10) * 40}ms`}">
-      ${f.length ? `<a class="og-ph" href="${esc(f[0].url)}" target="_blank" rel="noopener" aria-label="Ver foto"><img src="${esc(cldT(f[0].url, 'c_fill,w_420,h_420,q_auto'))}" alt="" loading="lazy">${f.length > 1 ? `<em>${ico('camera')}${f.length}</em>` : ''}</a>` : `<span class="og-ph nof">${ico('camera')}Sin foto</span>`}
-      <div class="og-b">
-        <div class="t1"><span class="pill ${kind === 'om' ? 'omx' : 'nc'}">${kind === 'om' ? 'Oportunidad de mejora' : 'No cumple'}</span><span class="cat">${esc(it.catNombre || '')}</span>${(() => { const d = x.fecha ? daysBetween(x.fecha, today()) : 0; return d > 0 ? `<span class="age ${d > 30 ? 'old' : d > 15 ? 'mid' : ''}" title="Días sin gestionar desde la inspección">${d} d</span>` : ''; })()}</div>
-        <h4>${esc(txt)}</h4>${kind === 'om' ? `<div class="ob">Ítem: ${esc(it.pregunta)}</div>` : it.obs ? `<div class="ob">${esc(it.obs)}</div>` : ''}
-        <div class="ft"><img src="${LOGOS[x.empresa] || LOGOS.COPASST}" alt="${esc(x.empresa)}"><span>${esc(x.sede)}${x.area ? ' · ' + esc(x.area) : ''} · ${fd(x.fecha)}</span></div>
-        <div class="ac"><button class="btn sm" data-ver>${ico('eye')}Ver inspección</button><button class="btn sm pri" data-gest>${ico('right')}Gestionar</button></div>
-      </div></article>`;
+  const uniq = f => [...new Set(pend.filter(z => MJ.emp === 'all' || z.x.empresa === MJ.emp).map(f).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es'));
+  fillSel('#mjSede', 'Todas las sedes', uniq(z => z.x.sede).map(v => [v, v]), MJ.sede); fillSel('#mjCat', 'Todas las categorías', uniq(z => z.it.catNombre).map(v => [v, v]), MJ.cat); fillSel('#mjArea', 'Todas las áreas', uniq(z => z.x.area).map(v => [v, v]), MJ.area); $('#mjOrd').value = MJ.ord;
+  const key = z => z.x.id + '|' + z.k + '|' + z.kind, box = $('#mjPend');
+  const html = show.map(z => {
+    const { x, k, kind, it } = z, f = it.fotos || [], txt = kind === 'om' ? it.om : it.pregunta, d = x.fecha ? daysBetween(x.fecha, today()) : 0;
+    return `<article class="orow ${kind}" data-id="${esc(key(z))}" data-i="${x.id}" data-k="${k}" data-kind="${kind}">
+      ${f.length ? `<a class="or-ph" href="${esc(f[0].url)}" target="_blank" rel="noopener" aria-label="Ver foto"><img src="${esc(cldT(f[0].url, 'c_fill,w_160,h_160,q_auto'))}" alt="" loading="lazy">${f.length > 1 ? `<em>${f.length}</em>` : ''}</a>` : `<span class="or-ph nof">${ico('camera')}</span>`}
+      <div class="or-b"><div class="or-t"><span class="pill ${kind === 'om' ? 'omx' : 'nc'}">${kind === 'om' ? 'Mejora' : 'No cumple'}</span><b>${esc(txt)}</b></div>
+        <div class="or-m"><img src="${LOGOS[x.empresa] || LOGOS.COPASST}" alt="${esc(x.empresa)}"><span>${esc(x.sede || 'Sede sin asignar')}${x.area ? ' · ' + esc(x.area) : ''}</span><span class="dot"></span><span>${esc(it.catNombre || '')}</span><span class="dot"></span><span>${fd(x.fecha)}</span>${kind === 'om' ? `<span class="dot"></span><span class="it">Ítem: ${esc(it.pregunta)}</span>` : it.obs ? `<span class="dot"></span><span class="it">${esc(it.obs)}</span>` : ''}</div></div>
+      <span class="age ${d > 30 ? 'old' : d > 15 ? 'mid' : ''}" title="Días sin gestionar">${d} d</span>
+      <div class="or-a"><button class="iconbtn" data-ver title="Ver inspección" aria-label="Ver inspección">${ico('eye')}</button><button class="btn sm pri" data-gest>${ico('right')}Gestionar</button></div>
+    </article>`;
   }).join('');
-  box.innerHTML = html || `<div class="pgx-e" style="grid-column:1/-1"><b>Todo está gestionado</b>Los hallazgos «No cumple» y las oportunidades de mejora de las inspecciones realizadas aparecerán aquí con su foto.</div>`;
-  $$('#mjPend .og').forEach(c => { $('[data-gest]', c).onclick = () => gestionarOM(c.dataset.i, c.dataset.k, c.dataset.kind); $('[data-ver]', c).onclick = () => openInsp(c.dataset.i); });
-  $('#mjMore').innerHTML = L.length > 12 ? `<button class="btn sm" id="mjMoreB">${MJ.more ? 'Ver menos' : `Ver las ${L.length - 12} restantes`}</button>` : ''; if ($('#mjMoreB')) $('#mjMoreB').onclick = () => { MJ.more = !MJ.more; updMejora(); };
+  morphInto(box, html || `<div class="pgx-e"><b>${pend.length ? 'Sin resultados con estos filtros' : 'Todo está gestionado'}</b>${pend.length ? 'Ajuste o limpie los filtros para ver más.' : 'Los hallazgos «No cumple» y las oportunidades de mejora de las inspecciones realizadas aparecerán aquí con su foto.'}</div>`);
+  $$('#mjPend .orow').forEach(c => { $('[data-gest]', c).onclick = () => gestionarOM(c.dataset.i, c.dataset.k, c.dataset.kind); $('[data-ver]', c).onclick = () => openInsp(c.dataset.i); });
+  $('#mjMore').innerHTML = L.length > 30 ? `<button class="btn sm" id="mjMoreB">${MJ.more ? 'Ver menos' : `Ver las ${L.length - 30} restantes`}</button>` : ''; if ($('#mjMoreB')) $('#mjMoreB').onclick = () => { MJ.more = !MJ.more; updMejora(); };
 }
 
 /* ── Recordatorios por correo (configuración) ── */
