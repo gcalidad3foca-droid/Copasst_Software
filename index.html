@@ -1185,11 +1185,8 @@ const SUBM = Object.fromEntries(SUBS.map(s => [s.id, s]));
 const COLS = [['pend', 'Pendiente', 'Por empezar', '#7C879C', 'st-pend'], ['curso', 'En curso', 'En marcha', '#1F47B8', 'st-curso'], ['comp', 'Realizada', 'Cerradas', '#14915B', 'st-comp']];
 const EST = { pend: 'Pendiente', curso: 'En curso', comp: 'Realizada' };
 const PRI = { alta: 'Alta', media: 'Media', baja: 'Baja' };
-const SEDES = {
-  FOCA: ['Foca Alegra','Foca Alkarawi','Foca Casona','Foca Baranoa','Foca Cartagena','Foca Galapa','Foca Malambo','Foca Riohacha','Foca Sabanalarga 1','Foca Sabanalarga 2','Foca Santa Marta Burano','Foca Valledupar','Mall Plaza','Sala Azul Santa Marta','Foca Sede 1 – 51B','Foca Sede 2','Foca Viva'],
-  VIU:  ['Sala Azul Mall Plaza','Sala Azul Santa Marta','Sala Azul Valledupar'],
-  IMES: ['Sede Viva', 'Sede Riohacha', 'Sede Alkarawi', 'Sede Cartagena - Portal San Felipe']
-};
+const SEDES_ALL = ['Sede Alegra','Sede Alkarawi','Sede Baranoa','Sede Cartagena','Sede Cartagena - Portal San Felipe','Sede Casona','Sede Galapa','Sede Malambo','Sede Riohacha','Sede Sabanalarga 1','Sede Sabanalarga 2','Sede Santa Marta Burano','Sede Valledupar','Sede Viva','Sede 1 – 51B','Sede 2','Mall Plaza','Sala Azul Mall Plaza','Sala Azul Santa Marta','Sala Azul Valledupar'];
+const SEDES = { FOCA: SEDES_ALL, VIU: SEDES_ALL, IMES: SEDES_ALL };
 const CATS = [['orden', 'Orden y Aseo'], ['infraestructura', 'Infraestructura'], ['electricas', 'Instalaciones Eléctricas'], ['muebles', 'Muebles y Enseres'], ['equipos', 'Equipos y Herramientas'], ['emergencia', 'Elementos de Emergencia']];
 
 firebase.initializeApp(FB_CONFIG);
@@ -1987,7 +1984,7 @@ function updInsp() {
   document.body.classList.toggle('dashfit', IV === 'dash' && innerWidth > 1000);
   $$('#iTabs .fchip').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === IV));
   $$('#iBar .ent').forEach(b => b.setAttribute('aria-pressed', b.dataset.e === FI.emp));
-  const all = insps(), sedes = FI.emp === 'all' ? [...new Set(Object.values(SEDES).flat())] : SEDES[FI.emp];
+  const all = insps(), sedes = [...new Set([...SEDES_ALL, ...all.filter(x => FI.emp === 'all' || x.empresa === FI.emp).map(x => x.sede).filter(Boolean)])];
   const years = [...new Set([today().slice(0, 4), ...all.map(x => (x.fecha || '').slice(0, 4)).filter(Boolean)])].sort().reverse();
   fillSel('#iSede', 'Todas las sedes', sedes.map(s => [s, s]), FI.sede); fillSel('#iArea', 'Todas las áreas', AREAS.map(s => [s, s]), FI.area);
   fillSel('#iYear', 'Todos los años', years.map(y => [y, y]), FI.year); fillSel('#iMes', 'Todo el año', MESL.map((m, i) => [String(i + 1).padStart(2, '0'), m]), FI.mes);
