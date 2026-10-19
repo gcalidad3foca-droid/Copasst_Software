@@ -852,6 +852,44 @@ body.dashfit .bi{gap:16px}
 .eseg.drag{cursor:grabbing}
 .eseg.drag .th{transition:background .25s;box-shadow:0 10px 22px -8px rgba(14,26,51,.5)}
 .eseg .th{will-change:transform}
+/* ── Registros: mis inspecciones / integrantes ── */
+.rgv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;background:#E9EDF4;border-radius:18px;margin-bottom:14px;max-width:620px}
+.rgv .fchip{justify-content:center;height:42px;border-radius:14px;gap:7px;font-size:13.5px}
+.rgv .fchip svg{width:17px;height:17px}
+.rgv .fchip b{min-width:22px;height:20px;padding:0 7px;border-radius:99px;background:rgba(14,26,51,.06);display:inline-grid;place-items:center;font-size:11.5px}
+.rgv .fchip[aria-pressed=true] b{background:var(--brand-soft);color:var(--brand)}
+.igrp.cu{background:linear-gradient(90deg,#EBF0FD,#F6F8FD);color:var(--brand)}
+.nos{font-style:normal;color:var(--warn)}
+.mgi{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px}
+.mgc{display:grid;gap:14px;text-align:left;border:0;background:#fff;border-radius:22px;padding:18px;box-shadow:var(--sh-2),0 0 0 1px var(--line);transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s;animation:kin .5s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d,0ms)}
+.mgc:hover{transform:translate3d(0,-3px,0);box-shadow:0 20px 40px -24px rgba(14,26,51,.45),0 0 0 1px #D3DBEA}
+.mgc:active{transform:scale(.985)}
+.mgh{display:flex;align-items:center;gap:12px;min-width:0}
+.mgn{flex:1;min-width:0}.mgn b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mgn small{display:block;font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ring.sm{width:46px;height:46px;flex:none}.ring.sm b{font-size:11px}
+.mgs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mgs span{display:block;padding:9px 10px;border-radius:12px;background:var(--wash);font-size:11.5px;font-weight:600;color:var(--muted)}
+.mgs b{display:block;font-size:19px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.mgs .cu{background:var(--brand-soft)}.mgs .cu b{color:var(--brand)}
+.mgl{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mgl svg{flex:none;width:15px;height:15px}
+.mhd{display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:12px 14px;margin-bottom:14px;box-shadow:var(--sh-1),0 0 0 1px var(--line);animation:kin .4s cubic-bezier(.22,1,.36,1) both}
+.mhd>div{flex:1;min-width:0}.mhd b{display:block;font-size:15px}.mhd small{font-size:12.5px;color:var(--muted)}
+.ftog{display:none}
+.rgv .ls{display:none}
+.stats[hidden],.filters[hidden],#rgList[hidden]{display:none!important}
+@media (max-width:760px){
+  .rgv{max-width:none}.rgv .fchip{font-size:13px;padding:0 4px;gap:6px}.rgv .fchip svg{display:none}.rgv .lf{display:none}.rgv .ls{display:inline}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .top p{display:none}.top{margin-bottom:14px}
+  .mhd small{display:none}
+  .ftog{display:inline-flex}
+  body:not(.fopen) #iBar{display:none}
+  #iFt[aria-pressed=true]{background:var(--brand-soft);color:var(--brand);border-color:var(--brand-line)}
+  .itop{flex-wrap:nowrap}.itop .seg{flex:1}
+  .stats{gap:10px;margin-bottom:14px}.st{padding:12px;gap:10px}.st .ic{width:36px;height:36px;border-radius:11px}.st b{font-size:18px}.st small{font-size:11.5px}
+  .mgc{padding:15px;border-radius:20px}
+  .irow .cont{height:32px;padding:0 12px}
+}
 </style>
 </head>
 <body>
@@ -1083,7 +1121,7 @@ const PRI = { alta: 'Alta', media: 'Media', baja: 'Baja' };
 const SEDES = {
   FOCA: ['Foca Alegra','Foca Alkarawi','Foca Casona','Foca Baranoa','Foca Cartagena','Foca Galapa','Foca Malambo','Foca Riohacha','Foca Sabanalarga 1','Foca Sabanalarga 2','Foca Santa Marta Burano','Foca Valledupar','Mall Plaza','Sala Azul Santa Marta','Foca Sede 1 – 51B','Foca Sede 2','Foca Viva'],
   VIU:  ['Sala Azul Mall Plaza','Sala Azul Santa Marta','Sala Azul Valledupar'],
-  IMES: ['IMES']
+  IMES: ['Sede Viva', 'Sede Riohacha', 'Sede Alkarawi', 'Sede Cartagena - Portal San Felipe']
 };
 const CATS = [['orden', 'Orden y Aseo'], ['infraestructura', 'Infraestructura'], ['electricas', 'Instalaciones Eléctricas'], ['muebles', 'Muebles y Enseres'], ['equipos', 'Equipos y Herramientas'], ['emergencia', 'Elementos de Emergencia']];
 
@@ -1846,6 +1884,8 @@ $('#tkSave').onclick = async () => {
 
 /* ── Inspecciones ── */
 const FI = { emp: 'all', sede: '', area: '', year: today().slice(0, 4), mes: '', q: '', est: '' };
+let RV = localStorage.getItem('copasst_rv') || 'mine', RVU = null;
+const isMineI = x => !!ME && ((x.inspectorUid && x.inspectorUid === ME.uid) || (!x.inspectorUid && PROF && x.inspector === PROF.nombre));
 let CV = localStorage.getItem('copasst_cv') || 'area', IV = localStorage.getItem('copasst_iv') || 'reg', HRES = 'NO', HCAT = 'all', ipane = null;
 const REP = { fmt: 'pdf', tit: 'Informe consolidado de inspecciones de condiciones seguras', by: '', fotos: true, det: true };
 const isCurso = x => x.estado === 'curso';
@@ -1853,11 +1893,12 @@ const paneEnter = () => { const pn = $('#iPane'); if (!pn) return; pn.style.anim
 function buildInsp() {
   setActs(`<a class="btn pri" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a>`); ipane = null;
   $('#view').innerHTML = `
-    <div class="itop"><div class="seg" id="iTabs">${[['reg', 'Registros', 'shield'], ['dash', 'Dashboard', 'chart']].map(([k, n, i]) => `<button class="fchip" data-t="${k}" aria-pressed="false">${ico(i)}${n}</button>`).join('')}</div><a class="btn pri itop-n" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a></div>
+    <div class="itop"><div class="seg" id="iTabs">${[['reg', 'Registros', 'shield'], ['dash', 'Dashboard', 'chart']].map(([k, n, i]) => `<button class="fchip" data-t="${k}" aria-pressed="false">${ico(i)}${n}</button>`).join('')}</div><button class="btn sm ftog" id="iFt" type="button">${ico('funnel')}Filtros</button><a class="btn pri itop-n" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a></div>
     <div class="ibar" id="iBar"><div class="ents">${[['all', 'Todas'], ...Object.keys(SEDES).map(k => [k, k])].map(([k, n]) => `<button class="ent" data-e="${k}" aria-pressed="false" title="${k === 'all' ? 'Todas las empresas' : EMP_N[k]}">${k === 'all' ? `<span>${ico('shield')}Todas</span>` : `<img src="${LOGOS[k]}" alt="${n}">`}</button>`).join('')}</div>
       <div class="isels"><select class="sel" id="iSede" aria-label="Sede"></select><select class="sel" id="iArea" aria-label="Área"></select><select class="sel" id="iYear" aria-label="Año"></select><select class="sel" id="iMes" aria-label="Mes"></select></div></div>
     <div id="iPane"></div>`;
   $$('#iTabs .fchip').forEach(b => b.onclick = () => { IV = b.dataset.t; localStorage.setItem('copasst_iv', IV); updInsp(); });
+  $('#iFt').onclick = () => { const o = document.body.classList.toggle('fopen'); $('#iFt').setAttribute('aria-pressed', o); };
   $$('#iBar .ent').forEach(b => b.onclick = () => { FI.emp = b.dataset.e; FI.sede = ''; updInsp(); });
   [['#iSede', 'sede'], ['#iArea', 'area'], ['#iYear', 'year'], ['#iMes', 'mes']].forEach(([s, k]) => $(s).onchange = e => { FI[k] = e.target.value; updInsp(); });
 }
@@ -1884,12 +1925,36 @@ function ncSinTarea(L) { let n = 0; L.forEach(x => Object.entries(x.items || {})
 
 function paneReg(L) {
   if (ipane !== 'reg') { ipane = 'reg'; ['mes', 'cat', 'area', 'don'].forEach(k => chart(k));
-    $('#iPane').innerHTML = `<div class="stats" id="rgSt"></div><div class="filters"><div class="seg" id="rgEst"></div><label class="search"><span class="sr">Buscar</span>${ico('search')}<input id="iQ" type="search" placeholder="Buscar por sede, área o inspector" autocomplete="off"></label></div><div id="rgList"></div>`; paneEnter();
+    $('#iPane').innerHTML = `<div class="rgv" id="rgV"></div><div class="stats" id="rgSt"></div><div id="rgMem"></div><div class="filters" id="rgF"><div class="seg" id="rgEst"></div><label class="search"><span class="sr">Buscar</span>${ico('search')}<input id="iQ" type="search" placeholder="Buscar por sede, área o inspector" autocomplete="off"></label></div><div id="rgList"></div>`; paneEnter();
     $('#iQ').value = FI.q; $('#iQ').oninput = e => { FI.q = e.target.value; drawReg(filtI()); }; }
   drawReg(L);
 }
-function drawReg(base) {
-  const done = base.filter(x => !isCurso(x)), cur = base.filter(isCurso), L = FI.est === 'curso' ? cur : FI.est === 'comp' ? done : base;
+function inspMembers(all) {
+  const map = {};
+  users().filter(u => u.subs && u.subs.ins).forEach(u => map[u.uid] = { u, L: [] });
+  all.forEach(x => { const u = x.inspectorUid && map[x.inspectorUid] ? x.inspectorUid : (users().find(v => v.nombre === x.inspector) || {}).uid; if (u) (map[u] = map[u] || { u: users().find(v => v.uid === u), L: [] }).L.push(x); else if (x.inspector) (map['n:' + x.inspector] = map['n:' + x.inspector] || { u: { uid: 'n:' + x.inspector, nombre: x.inspector }, L: [] }).L.push(x); });
+  return Object.values(map).filter(m => m.u).sort((a, b) => b.L.length - a.L.length || a.u.nombre.localeCompare(b.u.nombre, 'es'));
+}
+function drawReg(base0) {
+  const mem = inspMembers(base0), mine = base0.filter(isMineI), sel = RVU && mem.find(m => m.u.uid === RVU);
+  if (RV === 'member' && !sel) RV = 'team';
+  $('#rgV').innerHTML = [['mine', 'Mis inspecciones', mine.length, 'user'], ['team', 'Integrantes', mem.length, 'users'], ['all', 'Todas', base0.length, 'shield']].map(([k, n, c, i]) => `<button class="fchip" data-v="${k}" aria-pressed="${RV === k || (k === 'team' && RV === 'member')}">${ico(i)}<span class="lf">${n}</span><span class="ls">${{ mine: 'Mías', team: 'Integrantes', all: 'Todas' }[k]}</span><b>${c}</b></button>`).join('');
+  $$('#rgV .fchip').forEach(b => b.onclick = () => { RV = b.dataset.v; RVU = null; localStorage.setItem('copasst_rv', RV); drawReg(filtI()); });
+  const team = RV === 'team';
+  $('#rgSt').hidden = team; $('#rgF').hidden = team; $('#rgList').hidden = team;
+  if (team) {
+    $('#rgMem').innerHTML = mem.length ? `<div class="mgi">${mem.map((m, i) => { const d = m.L.filter(x => !isCurso(x)), c = m.L.filter(isCurso), av0 = d.length ? Math.round(d.reduce((a, x) => a + (x.pct || 0), 0) / d.length) : null, last = [...m.L].sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''))[0];
+      return `<button class="mgc" data-u="${esc(m.u.uid)}" style="--d:${Math.min(i, 10) * 45}ms"><span class="mgh">${av(m.u.nombre, 46, m.u)}<span class="mgn"><b>${esc(m.u.nombre)}</b><small>${esc(m.u.cargo || 'Subcomité de Inspecciones')}</small></span>${av0 == null ? '' : `<span class="ring sm" style="--p:${av0};--rc:${pctColor(av0)}"><b>${av0}%</b></span>`}</span>
+        <span class="mgs"><span><b>${d.length}</b>Realizadas</span><span class="${c.length ? 'cu' : ''}"><b>${c.length}</b>En curso</span><span><b>${new Set(m.L.map(x => x.sede).filter(Boolean)).size}</b>Sedes</span></span>
+        <span class="mgl">${last ? `${ico('clock')}Última: ${esc(last.sede || 'Sede sin asignar')} · ${fd(last.fecha)}` : `${ico('clock')}Aún sin inspecciones`}</span></button>`; }).join('')}</div>`
+      : `<div class="card"><div class="empty" style="padding:40px 16px"><b>Sin integrantes</b>Los miembros del Subcomité de Inspecciones aparecerán aquí.</div></div>`;
+    $$('#rgMem .mgc').forEach(b => b.onclick = () => { RV = 'member'; RVU = b.dataset.u; drawReg(filtI()); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    return;
+  }
+  $('#rgMem').innerHTML = RV === 'member' ? `<div class="mhd">${av(sel.u.nombre, 40, sel.u)}<div><b>${esc(sel.u.nombre)}</b><small>Inspecciones de este integrante</small></div><button class="btn sm" id="rgBack">${ico('users')}Integrantes</button></div>` : '';
+  if ($('#rgBack')) $('#rgBack').onclick = () => { RV = 'team'; RVU = null; drawReg(filtI()); };
+  const base = RV === 'mine' ? mine : RV === 'member' ? sel.L : base0;
+  const done = base.filter(x => !isCurso(x)), cur = base.filter(isCurso), L = (FI.est === 'curso' ? cur : FI.est === 'comp' ? done : base).slice().sort((a, b) => isCurso(b) - isCurso(a));
   const avg = done.length ? Math.round(done.reduce((a, x) => a + (x.pct || 0), 0) / done.length) : null, sin = ncSinTarea(done);
   $('#rgSt').innerHTML = [
     ['shield', done.length, 'Realizadas', '#E5F5EC', '#14915B'], ['play', cur.length, 'En curso', '#EBF0FD', '#1F47B8'],
@@ -1898,13 +1963,13 @@ function drawReg(base) {
   ].map(([i, v, l, b, f]) => `<div class="st" style="--sb:${b};--sf:${f}"><span class="ic">${ico(i)}</span><div><b>${v}</b><small>${l}</small></div></div>`).join('');
   $('#rgEst').innerHTML = [['', 'Todas', base.length], ['curso', 'En curso', cur.length], ['comp', 'Realizadas', done.length]].map(([k, n, c]) => `<button class="fchip" data-k="${k}" aria-pressed="${FI.est === k}">${n} <b>${c}</b></button>`).join('');
   $$('#rgEst .fchip').forEach(b => b.onclick = () => { FI.est = b.dataset.k; drawReg(filtI()); });
-  if (!L.length) { $('#rgList').innerHTML = `<div class="card"><div class="empty" style="padding:48px 16px"><b>No hay inspecciones con estos filtros</b>Las inspecciones iniciadas desde la lista de verificación aparecerán aquí.<div style="margin-top:16px"><a class="btn pri" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a></div></div></div>`; return; }
+  if (!L.length) { $('#rgList').innerHTML = `<div class="card"><div class="empty" style="padding:48px 16px"><b>${RV === 'mine' ? 'Aún no tienes inspecciones con estos filtros' : 'No hay inspecciones con estos filtros'}</b>Las inspecciones iniciadas desde la lista de verificación aparecerán aquí.<div style="margin-top:16px"><a class="btn pri" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a></div></div></div>`; return; }
   let html = '', g = '';
   L.forEach(x => {
-    const k = (x.fecha || '').slice(0, 7), cu = isCurso(x), ans = (x.si || 0) + (x.no || 0) + (x.na || 0), tot = ans + (x.pend || 0) || 1;
-    if (k !== g) { g = k; const n = L.filter(y => (y.fecha || '').startsWith(k)).length; html += `<div class="igrp">${k ? MESL[+k.slice(5) - 1] + ' ' + k.slice(0, 4) : 'Sin fecha'}<span>${n} inspección${n === 1 ? '' : 'es'}</span></div>`; }
+    const cu = isCurso(x), k = cu ? 'curso' : (x.fecha || '').slice(0, 7), ans = (x.si || 0) + (x.no || 0) + (x.na || 0), tot = ans + (x.pend || 0) || 1;
+    if (k !== g) { g = k; const n = cu ? L.filter(isCurso).length : L.filter(y => !isCurso(y) && (y.fecha || '').startsWith(k)).length; html += `<div class="igrp ${cu ? 'cu' : ''}">${cu ? 'En curso · para continuar' : k ? MESL[+k.slice(5) - 1] + ' ' + k.slice(0, 4) : 'Sin fecha'}<span>${n} inspección${n === 1 ? '' : 'es'}</span></div>`; }
     html += `<div class="irow ${cu ? 'curso' : ''}" role="button" tabindex="0" data-id="${x.id}" data-cu="${cu ? 1 : 0}"><span class="ilogo"><img src="${LOGOS[x.empresa] || LOGOS.COPASST}" alt="${esc(x.empresa)}" loading="lazy"></span>
-      <span style="min-width:0"><b>${esc(x.sede)}${x.area ? ` · ${esc(x.area)}` : ''}<span class="est ${cu ? 'curso' : 'comp'}">${cu ? '<i></i>En curso' : 'Realizada'}</span></b><small>${fdl(x.fecha)} · ${esc(x.inspector || 'Sin inspector')}${cu ? ` · ${ans} de ${tot} ítems respondidos` : ''}</small>${cu ? `<span class="iprog"><i style="width:${Math.round(ans / tot * 100)}%"></i></span>` : ''}</span>
+      <span style="min-width:0"><b>${x.sede ? esc(x.sede) : '<i class="nos">Sede sin asignar</i>'}${x.area ? ` · ${esc(x.area)}` : ''}<span class="est ${cu ? 'curso' : 'comp'}">${cu ? '<i></i>En curso' : 'Realizada'}</span></b><small>${fdl(x.fecha)} · ${esc(x.inspector || 'Sin inspector')}${cu ? ` · ${ans} de ${tot} ítems respondidos` : ''}</small>${cu ? `<span class="iprog"><i style="width:${Math.round(ans / tot * 100)}%"></i></span>` : ''}</span>
       <span class="ichips"><span><i style="background:var(--c)"></i>${x.si || 0}</span><span><i style="background:var(--nc)"></i>${x.no || 0}</span><span><i style="background:#A9B4C6"></i>${x.na || 0}</span></span>
       ${cu ? `<a class="cont" href="${LISTA_URL}?id=${encodeURIComponent(x.id)}">${ico('play')}Continuar</a>` : `<span class="ring" style="--p:${x.pct || 0};--rc:${pctColor(x.pct || 0)}"><b>${x.pct || 0}%</b></span><span class="chv">${ico('right')}</span>`}</div>`;
   });
