@@ -1111,11 +1111,24 @@ $('#bReport').onclick = generarInforme;
 
 /* ═════ Arranque ═════ */
 function authReady() { return new Promise(res => { if (!auth) return res(null); const off = auth.onAuthStateChanged(u => { off(); res(u); }); }); }
+/* Datos del usuario guardados por el panel: empresa e inspector listos desde el primer instante */
+function applyMe(T) {
+  try { const m = JSON.parse(localStorage.getItem('copasst_me') || 'null'); if (!m) return;
+    if (!T.inspector && m.nombre) { T.inspector = m.nombre; T.inspectorUid = m.uid || null; }
+    const e = ['FOCA', 'VIU', 'IMES'].find(k => m.empresas && m.empresas[k]);
+    if (e && !T.empSet && !T.id && !Object.keys(T.r || {}).length) { T.empresa = e; T.sede = ''; }
+  } catch (e) { }
+}
+const NUEVA = new URLSearchParams(location.search).has('nueva');
+if (NUEVA) { try { localStorage.removeItem(LS_KEY); } catch (e) { } }
+else { try { const d0 = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); if (d0 && !new URLSearchParams(location.search).get('id')) S = { ...blank(), ...d0, ev: {} }; } catch (e) { } }
+applyMe(S); writeHead();
 (async function init() {
   ME = await authReady();
   if (auth && !ME) { location.replace('index.html?next=' + encodeURIComponent(location.pathname.split('/').pop() + location.search)); return; }
   const id = new URLSearchParams(location.search).get('id');
   let draft = null; try { draft = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) { }
+  if (NUEVA) { draft = null; try { await IDB.clear(); } catch (e) { } S = blank(); history.replaceState(null, '', location.pathname); }
   if (id && draft && draft.id === id && db) {
     // Mismo registro en este equipo: se usa la versión más reciente (este equipo o el panel)
     try { const s0 = await db.ref(ROOT + '/inspecciones/' + id + '/updatedAt').once('value'); if ((s0.val() || 0) > (draft.updatedAt || 0) + 1500) draft = null; } catch (e) { }
@@ -1126,6 +1139,7 @@ function authReady() { return new Promise(res => { if (!auth) return res(null); 
     loader(false); if (!ok) { toast('No se encontró la inspección solicitada', true); history.replaceState(null, '', location.pathname); if (draft) await restoreDraft(draft); }
     else persist();
   } else if (draft) await restoreDraft(draft);
+  if (!S.id && !Object.keys(S.r).length) applyMe(S);
   writeHead(); renderAll(); initCharts(); updateAll(); if (db) loadInspectors().then(() => { if (!S.id && S.estado !== 'comp') remoteSave(false); });
   Object.entries(S.ev).forEach(([k, a]) => a.forEach(p => { if (p.st === 'local' && p.dataUrl) uploadPhoto(k, p); }));
 })();
