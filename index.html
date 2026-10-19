@@ -875,10 +875,21 @@ body.dashfit .bi{gap:16px}
 .mhd{display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:12px 14px;margin-bottom:14px;box-shadow:var(--sh-1),0 0 0 1px var(--line);animation:kin .4s cubic-bezier(.22,1,.36,1) both}
 .mhd>div{flex:1;min-width:0}.mhd b{display:block;font-size:15px}.mhd small{font-size:12.5px;color:var(--muted)}
 .ftog{display:none}
-.rgv .ls{display:none}
+.ls{display:none}
 .stats[hidden],.filters[hidden],#rgList[hidden]{display:none!important}
 @media (max-width:760px){
-  .rgv{max-width:none}.rgv .fchip{font-size:13px;padding:0 4px;gap:6px}.rgv .fchip svg{display:none}.rgv .lf{display:none}.rgv .ls{display:inline}
+  .rgv{max-width:none;grid-template-columns:minmax(0,1.5fr) minmax(0,1.15fr) minmax(0,.85fr)}.rgv .fchip{font-size:12.5px;padding:0 6px;gap:5px;min-width:0}.rgv .fchip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rgv .fchip svg{display:none}.rgv .fchip b{min-width:20px;padding:0 5px}
+  .lf{display:none}.ls{display:inline}
+  .itop{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+  .itop .seg{display:grid;grid-template-columns:1fr 1fr;min-width:0}
+  .itop .seg .fchip{justify-content:center;white-space:nowrap;padding:0 8px;min-width:0}
+  .ftog{width:46px;height:46px;padding:0;justify-content:center;border-radius:14px}.ftog svg{width:20px;height:20px}
+  .itop-n{display:none!important}
+  .bi-head{gap:10px}.bi-head>div:first-child{width:100%}
+  .bi-head .acts{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:8px}
+  .bi-head .acts .btn{justify-content:center;padding:0 10px;font-size:13px;min-width:0;white-space:nowrap}
+  .bi-head .acts .pri{grid-column:1/-1;height:44px}
+  .kpis.five .kpi:first-child{grid-column:1/-1}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .top p{display:none}.top{margin-bottom:14px}
   .mhd small{display:none}
@@ -889,6 +900,22 @@ body.dashfit .bi{gap:16px}
   .stats{gap:10px;margin-bottom:14px}.st{padding:12px;gap:10px}.st .ic{width:36px;height:36px;border-radius:11px}.st b{font-size:18px}.st small{font-size:11.5px}
   .mgc{padding:15px;border-radius:20px}
   .irow .cont{height:32px;padding:0 12px}
+}
+/* ── Ajustes finos para pantallas angostas ── */
+.dn .lg div span{white-space:nowrap}
+@media (max-width:440px){
+  .rgv{grid-template-columns:minmax(0,1.6fr) minmax(0,1.2fr) minmax(0,.8fr)}
+  .rgv .fchip{font-size:12px;padding:0 5px}
+  .rgv .fchip:not([aria-pressed=true]) b{display:none}
+  .mtabs .fchip{font-size:12.5px;gap:4px;padding:0 4px;min-width:0}
+  .mtabs .fchip .sti svg{width:14px;height:14px}
+  .mtabs .fchip b{font-size:12px}
+  .mjflow .seg .fchip{font-size:12px;padding:0 3px;gap:4px;min-width:0}
+  .mjflow .seg .fchip b{min-width:18px;height:18px;padding:0 5px;font-size:11px;margin-left:0}
+  .mjflow .seg .fchip:not([aria-pressed=true]) b{display:none}
+  .ent span svg{display:none}
+  .ents{gap:6px}.ent{padding:0 6px}
+  .itop .seg .fchip svg{display:none}
 }
 </style>
 </head>
@@ -1893,7 +1920,7 @@ const paneEnter = () => { const pn = $('#iPane'); if (!pn) return; pn.style.anim
 function buildInsp() {
   setActs(`<a class="btn pri" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a>`); ipane = null;
   $('#view').innerHTML = `
-    <div class="itop"><div class="seg" id="iTabs">${[['reg', 'Registros', 'shield'], ['dash', 'Dashboard', 'chart']].map(([k, n, i]) => `<button class="fchip" data-t="${k}" aria-pressed="false">${ico(i)}${n}</button>`).join('')}</div><button class="btn sm ftog" id="iFt" type="button">${ico('funnel')}Filtros</button><a class="btn pri itop-n" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a></div>
+    <div class="itop"><div class="seg" id="iTabs">${[['reg', 'Registros', 'shield'], ['dash', 'Dashboard', 'chart']].map(([k, n, i]) => `<button class="fchip" data-t="${k}" aria-pressed="false">${ico(i)}${n}</button>`).join('')}</div><button class="btn sm ftog" id="iFt" type="button" aria-label="Filtros" title="Filtros">${ico('funnel')}</button><a class="btn pri itop-n" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a></div>
     <div class="ibar" id="iBar"><div class="ents">${[['all', 'Todas'], ...Object.keys(SEDES).map(k => [k, k])].map(([k, n]) => `<button class="ent" data-e="${k}" aria-pressed="false" title="${k === 'all' ? 'Todas las empresas' : EMP_N[k]}">${k === 'all' ? `<span>${ico('shield')}Todas</span>` : `<img src="${LOGOS[k]}" alt="${n}">`}</button>`).join('')}</div>
       <div class="isels"><select class="sel" id="iSede" aria-label="Sede"></select><select class="sel" id="iArea" aria-label="Área"></select><select class="sel" id="iYear" aria-label="Año"></select><select class="sel" id="iMes" aria-label="Mes"></select></div></div>
     <div id="iPane"></div>`;
@@ -1911,7 +1938,7 @@ function filtI() {
 const filtD = () => filtI().filter(x => !isCurso(x));
 function updInsp() {
   if (IV === 'rep') IV = 'dash';
-  document.body.classList.toggle('dashfit', IV === 'dash');
+  document.body.classList.toggle('dashfit', IV === 'dash' && innerWidth > 1000);
   $$('#iTabs .fchip').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === IV));
   $$('#iBar .ent').forEach(b => b.setAttribute('aria-pressed', b.dataset.e === FI.emp));
   const all = insps(), sedes = FI.emp === 'all' ? [...new Set(Object.values(SEDES).flat())] : SEDES[FI.emp];
@@ -1938,7 +1965,7 @@ function inspMembers(all) {
 function drawReg(base0) {
   const mem = inspMembers(base0), mine = base0.filter(isMineI), sel = RVU && mem.find(m => m.u.uid === RVU);
   if (RV === 'member' && !sel) RV = 'team';
-  $('#rgV').innerHTML = [['mine', 'Mis inspecciones', mine.length, 'user'], ['team', 'Integrantes', mem.length, 'users'], ['all', 'Todas', base0.length, 'shield']].map(([k, n, c, i]) => `<button class="fchip" data-v="${k}" aria-pressed="${RV === k || (k === 'team' && RV === 'member')}">${ico(i)}<span class="lf">${n}</span><span class="ls">${{ mine: 'Mías', team: 'Integrantes', all: 'Todas' }[k]}</span><b>${c}</b></button>`).join('');
+  $('#rgV').innerHTML = [['mine', 'Mis inspecciones', mine.length, 'user'], ['team', 'Integrantes', mem.length, 'users'], ['all', 'Todas', base0.length, 'shield']].map(([k, n, c, i]) => `<button class="fchip" data-v="${k}" aria-pressed="${RV === k || (k === 'team' && RV === 'member')}">${ico(i)}<span>${n}</span><b>${c}</b></button>`).join('');
   $$('#rgV .fchip').forEach(b => b.onclick = () => { RV = b.dataset.v; RVU = null; localStorage.setItem('copasst_rv', RV); drawReg(filtI()); });
   const team = RV === 'team';
   $('#rgSt').hidden = team; $('#rgF').hidden = team; $('#rgList').hidden = team;
@@ -1987,18 +2014,18 @@ function fitBI() {
   if (!document.body.classList.contains('dashfit') || innerWidth <= 1280 || innerHeight < 620) { b.style.removeProperty('--bih'); return; }
   const top = b.getBoundingClientRect().top + scrollY; b.style.setProperty('--bih', Math.max(480, Math.floor(innerHeight - top - 22)) + 'px');
 }
-addEventListener('resize', () => { clearTimeout(fitBI.t); fitBI.t = setTimeout(fitBI, 120); });
+addEventListener('resize', () => { clearTimeout(fitBI.t); fitBI.t = setTimeout(() => { const want = innerWidth > 1000 && ((VIEW === 'inspecciones' && IV === 'dash') || (VIEW === 'mejora' && MJ.v === 'dash')); if (document.body.classList.contains('dashfit') !== want) document.body.classList.toggle('dashfit', want); fitBI(); }, 120); });
 function paneDash(L) {
   if (ipane !== 'dash') { ipane = 'dash';
     $('#iPane').innerHTML = `
-      <div class="bi-head"><div><b>Business Intelligence · Inspecciones SST</b><span id="biSub"></span></div><div class="acts"><button class="btn sm pri" id="xRep">${ico('report')}Generar informe</button><button class="btn sm" id="xCons">${ico('sheet')}Base consolidada</button><button class="btn sm" id="xDet">${ico('sheet')}Base detallada por ítem</button></div></div>
+      <div class="bi-head"><div><b>Business Intelligence · Inspecciones SST</b><span id="biSub"></span></div><div class="acts"><button class="btn sm pri" id="xRep">${ico('report')}Generar informe</button><button class="btn sm" id="xCons">${ico('sheet')}Base consolidada</button><button class="btn sm" id="xDet">${ico('sheet')}<span class="lf">Base detallada por ítem</span><span class="ls">Detalle por ítem</span></button></div></div>
       <div class="bi">
         <div class="kpis five kp" id="biK"></div>
-        <section class="card pnl c5"><div class="ph"><h2>Tendencia mensual</h2><span class="badge" id="biTr"></span></div><div class="bd"><canvas id="chMes"></canvas></div></section>
         <section class="card pnl c3"><div class="ph"><h2>Respuestas</h2><span class="badge" id="biDn"></span></div><div class="bd"><div class="dn"><div class="dc"><canvas id="chDon"></canvas><b id="biDnC"></b></div><div class="lg" id="biLg"></div></div></div></section>
+        <section class="card pnl c5"><div class="ph"><h2>Tendencia mensual</h2><span class="badge" id="biTr"></span></div><div class="bd"><canvas id="chMes"></canvas></div></section>
+        <section class="card pnl c4"><div class="ph"><h2>Ranking de inspecciones</h2><span class="badge" id="biRn"></span></div><div class="bd scr srows" id="biRank"></div></section>
         <section class="card pnl c4"><div class="ph"><h2>Por empresa</h2><span class="badge" id="biEb"></span></div><div class="bd scr" id="biEmp"></div></section>
         <section class="card pnl c4"><div class="ph"><h2>Cumplimiento</h2><div class="seg mini" id="biCv"></div></div><div class="bd scr" id="biCvL"></div></section>
-        <section class="card pnl c4"><div class="ph"><h2>Ranking de inspecciones</h2><span class="badge" id="biRn"></span></div><div class="bd scr srows" id="biRank"></div></section>
         <section class="card pnl c4"><div class="ph"><h2>Hallazgos por ítem</h2><span class="badge" id="biHn"></span></div><div class="hsel"><div class="seg" id="biRt"></div><select class="sel" id="biCat" aria-label="Categoría"></select></div><div class="bd scr hl" id="biHl"></div></section>
       </div>`; paneEnter();
     $('#xCons').onclick = () => exportInsp(false); $('#xDet').onclick = () => exportInsp(true); $('#xRep').onclick = () => openRep('insp');
@@ -2381,7 +2408,7 @@ function buildMejora() {
   drawMjPane();
 }
 function drawMjPane() {
-  const pane = $('#mjPane'); document.body.classList.toggle('dashfit', MJ.v === 'dash');
+  const pane = $('#mjPane'); document.body.classList.toggle('dashfit', MJ.v === 'dash' && innerWidth > 1000);
   if (MJ.v === 'pend') pane.innerHTML = `<section class="pgx"><div class="pgx-h"><span class="ic">${ico('bulb')}</span><div><b>Bandeja por gestionar</b><small>Hallazgos «No cumple» y oportunidades de mejora de las inspecciones realizadas. Al gestionarlas se convierten en tareas del Subcomité de Mejora.</small></div></div><div class="pgx-tools"><span class="seg" id="mjTipo"></span><span class="mjemp" id="mjEmp"></span></div><div class="pgx-l" id="mjPend"></div><div id="mjMore" style="text-align:center;margin-top:14px"></div></section>`;
   else if (MJ.v === 'dash') {
     ['mjmes', 'mjdon'].forEach(k => chart(k));
