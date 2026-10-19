@@ -629,11 +629,12 @@ const IDB = (() => {
 })();
 let saveT, rsT, rsBusy = false;
 function touch() {
-  $('#saved').classList.add('busy'); $('#savedTx').textContent = 'Guardando…';
+  S.updatedAt = Date.now(); $('#saved').classList.add('busy'); $('#savedTx').textContent = 'Guardando…';
   clearTimeout(saveT); saveT = setTimeout(persist, 350); queueRemote();
 }
 /* Avance en curso: se guarda solo en el panel, para continuar desde cualquier equipo */
-function queueRemote() { clearTimeout(rsT); if (S.estado === 'comp' || !db || !ME) return; rsT = setTimeout(() => remoteSave(false), 2800); }
+function queueRemote() { clearTimeout(rsT); if (S.estado === 'comp' || !db || !ME) return; rsT = setTimeout(() => remoteSave(false), 300); }
+function flushRemote() { if (S.id && S.estado !== 'comp' && rsT) { clearTimeout(rsT); rsT = 0; remoteSave(false); } }
 async function remoteSave(manual) {
   if (S.estado === 'comp' || !db || !ME) return false;
   if (!S.inspector.trim()) { if (manual) toast('Indique quién realiza la inspección para guardar el avance', true); return false; }
@@ -643,7 +644,7 @@ async function remoteSave(manual) {
     const rec = record(compute(), 'curso'), ref = S.id ? db.ref(ROOT + '/inspecciones/' + S.id) : db.ref(ROOT + '/inspecciones').push();
     rec.createdAt = S.createdAt || Date.now();
     await Promise.race([ref.set(rec), new Promise((_, j) => setTimeout(() => j(new Error('Sin conexión')), 15000))]);
-    const first = !S.id; S.id = ref.key; S.createdAt = rec.createdAt; persist(); if (first) { history.replaceState(null, '', '?id=' + encodeURIComponent(S.id)); stateUI(); if (!manual) toast('Inspección iniciada · ya aparece En curso en el panel'); }
+    const first = !S.id; S.id = ref.key; S.createdAt = rec.createdAt; S.updatedAt = rec.updatedAt; persist(); if (first) { history.replaceState(null, '', '?id=' + encodeURIComponent(S.id)); stateUI(); if (!manual) toast('Inspección iniciada · ya aparece En curso en el panel'); }
     $('#savedTx').textContent = 'Avance guardado en el panel'; if (manual) toast('Avance guardado · puede continuarla cuando quiera');
     return true;
   } catch (e) { if (manual) toast('No se pudo guardar el avance: ' + e.message, true); return false; }
@@ -915,7 +916,7 @@ async function loadInspectors() {
 async function fetchDataUrl(url) { if (!url) return null; if (url.startsWith('data:')) return url; try { const r = await fetch(url, { mode: 'cors' }); if (!r.ok) throw 0; const b = await r.blob(); return await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = () => res(null); fr.readAsDataURL(b); }); } catch (e) { return urlToDataUrl(url); } }
 async function loadRemote(id) {
   const s = await db.ref(ROOT + '/inspecciones/' + id).once('value'); const x = s.val(); if (!x) return false;
-  S = { ...blank(), id, estado: x.estado === 'curso' ? 'curso' : 'comp', createdAt: x.createdAt || null, fecha: x.fecha, empresa: x.empresa, sede: x.sede, area: x.area || '', inspector: x.inspector || '', inspectorUid: x.inspectorUid || null };
+  S = { ...blank(), id, estado: x.estado === 'curso' ? 'curso' : 'comp', updatedAt: x.updatedAt || 0, createdAt: x.createdAt || null, fecha: x.fecha, empresa: x.empresa, sede: x.sede, area: x.area || '', inspector: x.inspector || '', inspectorUid: x.inspectorUid || null };
   Object.entries(x.items || {}).forEach(([k, it]) => { if (!KM[k]) return; if (it.resp) S.r[k] = it.resp; if (it.obs) S.obs[k] = it.obs; if (it.om) S.om[k] = it.om;
     if (it.fotos && it.fotos.length) S.ev[k] = it.fotos.map(f => ({ id: uid(), url: f.url, dataUrl: null, title: f.title || '', st: 'ok' })); });
   return true;
@@ -966,7 +967,8 @@ async function resetForm() {
 }
 $('#bReset').onclick = resetForm; $('#bNewTop').onclick = resetForm;
 window.addEventListener('beforeunload', e => { persist(); if (UPLOADS.size) { e.preventDefault(); e.returnValue = ''; } });
-document.addEventListener('visibilitychange', () => { if (document.hidden) persist(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { persist(); flushRemote(); } });
+window.addEventListener('pagehide', () => { persist(); flushRemote(); });
 
 /* ═════ Informe PDF ═════ */
 function inkLogo(img) {
@@ -1115,6 +1117,10 @@ function authReady() { return new Promise(res => { if (!auth) return res(null); 
   if (auth && !ME) { location.replace('index.html?next=' + encodeURIComponent(location.pathname.split('/').pop() + location.search)); return; }
   const id = new URLSearchParams(location.search).get('id');
   let draft = null; try { draft = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) { }
+  if (id && draft && draft.id === id && db) {
+    // Mismo registro en este equipo: se usa la versión más reciente (este equipo o el panel)
+    try { const s0 = await db.ref(ROOT + '/inspecciones/' + id + '/updatedAt').once('value'); if ((s0.val() || 0) > (draft.updatedAt || 0) + 1500) draft = null; } catch (e) { }
+  }
   if (id && (!draft || draft.id !== id)) {
     loader(true, 'Cargando inspección…', 'Un momento');
     let ok = false; try { ok = db && await loadRemote(id); } catch (e) { }
