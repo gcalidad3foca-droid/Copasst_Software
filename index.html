@@ -866,6 +866,7 @@ body.dashfit .bi{gap:16px}
 .mgc:active{transform:scale(.985)}
 .mgh{display:flex;align-items:center;gap:12px;min-width:0}
 .mgn{flex:1;min-width:0}.mgn b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mgn small{display:block;font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ring.off{--p:0;--rc:#C8D0DE}.ring.off b{color:var(--muted)}
 .ring.sm{width:46px;height:46px;flex:none}.ring.sm b{font-size:11px}
 .mgs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .mgs span{display:block;padding:9px 10px;border-radius:12px;background:var(--wash);font-size:11.5px;font-weight:600;color:var(--muted)}
@@ -917,6 +918,44 @@ body.dashfit .bi{gap:16px}
   .ents{gap:6px}.ent{padding:0 6px}
   .itop .seg .fchip svg{display:none}
 }
+/* ── Inspecciones en curso: tarjetas ── */
+.icsec{margin-bottom:18px}
+.icsec-h{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin:0 4px 10px}
+.icsec-h em{font-style:normal;letter-spacing:0;font-size:11.5px;background:var(--brand-soft);padding:2px 8px;border-radius:99px}
+.dotl{width:8px;height:8px;border-radius:50%;background:var(--brand);animation:pulse2 1.6s infinite}
+.icg{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:14px}
+.icard{display:grid;gap:14px;background:#fff;border-radius:22px;padding:18px;box-shadow:var(--sh-2),0 0 0 1px var(--line);position:relative;overflow:hidden;cursor:pointer;transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s;animation:kin .5s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d,0ms)}
+.icard::before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:linear-gradient(90deg,#3563E9,#7AA2FF)}
+.icard:hover{transform:translate3d(0,-3px,0);box-shadow:0 22px 44px -26px rgba(14,26,51,.45),0 0 0 1px #D3DBEA}
+.ic-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
+.ic-top .ilogo{width:64px;height:44px}
+.ic-t b{display:block;font-size:15.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ic-t small{display:block;font-size:12.5px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.icard .est{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;border-radius:99px;font-size:11.5px;font-weight:800;background:var(--brand-soft);color:var(--brand)}
+.icard .est i{width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse2 1.6s infinite}
+.ic-prt{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;font-weight:600;color:var(--muted)}
+.ic-prt b{font-size:15px;font-weight:800;color:var(--brand)}
+.ic-bar{display:block;height:8px;border-radius:8px;background:#EEF1F6;margin-top:7px;overflow:hidden}
+.ic-bar i{display:block;height:100%;width:var(--w);border-radius:8px;background:linear-gradient(90deg,#1F47B8,#3563E9);transform-origin:left;animation:hbg 1s cubic-bezier(.22,1,.36,1) both}
+.ic-st{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.ic-st span{display:block;text-align:center;padding:8px 4px;border-radius:12px;background:var(--wash);font-size:11.5px;font-weight:600;color:var(--muted)}
+.ic-st b{display:block;font-size:17px;font-weight:800;letter-spacing:-.02em}
+.ic-st .si b{color:var(--c-ink)}.ic-st .no b{color:var(--nc-ink)}.ic-st .na b{color:#66748C}.ic-st .om b{color:#6B48C8}
+.ic-ft{display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--line-2)}
+.ic-who{flex:1;min-width:0}.ic-who b{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ic-who small{font-size:11.5px;color:var(--muted)}
+.icard .cont{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 16px;border-radius:99px;background:var(--brand);color:#fff;font-weight:700;font-size:13.5px;box-shadow:0 10px 20px -12px rgba(31,71,184,.9);transition:background .2s,transform .2s;flex:none}
+.icard .cont:hover{background:var(--brand-2);transform:translateY(-1px)}.icard .cont svg{width:15px;height:15px}
+@media (max-width:760px){.irow.curso{grid-template-columns:54px minmax(0,1fr) auto;row-gap:10px}.irow.curso .cont{grid-column:2/-1;justify-self:start}.irow.curso .ring{grid-row:1;grid-column:3}}
+@media (max-width:440px){.icard{padding:15px;border-radius:20px}.ic-top .ilogo{width:54px;height:40px}.icard .est{display:none}}
+/* ── Arranque sin saltos ── */
+#boot{position:fixed;inset:0;z-index:600;display:grid;place-items:center;background:#F3F5FA;transition:opacity .4s ease,visibility .4s}
+#boot.out{opacity:0;visibility:hidden}
+#boot .bt{display:grid;justify-items:center;gap:22px;animation:rise .5s cubic-bezier(.22,1,.36,1) both}
+#boot img{height:64px;width:auto}
+.btl{display:block;width:120px;height:4px;border-radius:4px;background:#E2E7F0;overflow:hidden}
+.btl i{display:block;width:40%;height:100%;border-radius:4px;background:var(--brand);animation:btl 1.1s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes btl{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+#app:not([hidden]){animation:fade .35s ease}
 </style>
 </head>
 <body>
@@ -972,6 +1011,7 @@ body.dashfit .bi{gap:16px}
 </svg>
 
 <!-- ═════ Ingreso ═════ -->
+<div id="boot" aria-hidden="true"><div class="bt"><img class="ink" src="https://i.imgur.com/F27EdWc.png" alt=""><span class="btl"><i></i></span></div></div>
 <div class="login" id="login" hidden>
   <form class="lcard" id="lgForm" novalidate>
     <div class="lbrand"><span class="lgtile"><img class="ink" src="https://i.imgur.com/F27EdWc.png" alt="COPASST"></span><b>COPASST Software</b><span>Comité Paritario de Seguridad y Salud en el Trabajo</span></div>
@@ -1009,7 +1049,7 @@ body.dashfit .bi{gap:16px}
     <div class="mob-brand"><span class="lgtile sm"><img class="ink" src="https://i.imgur.com/F27EdWc.png" alt="COPASST" onerror="this.remove()"></span><b>COPASST Software</b><span class="sp"></span><span class="conn" id="conn2"></span><button class="mme" id="mobMe" aria-label="Mi perfil"></button><button class="iconbtn mout" id="mobOut" aria-label="Cerrar sesión" title="Cerrar sesión"><svg class="i"><use href="#i-logout"/></svg></button></div>
     <div class="banner" id="offBanner" hidden><svg class="i"><use href="#i-alert"/></svg><span>No hay conexión con la base de datos. Revise su internet o las reglas de Firebase del nodo <b>copasst</b>.</span></div>
     <header class="top" id="top">
-      <div><h1 id="vTitle">Resumen</h1><p id="vSub"></p></div>
+      <div><h1 id="vTitle"></h1><p id="vSub"></p></div>
       <div class="acts" id="vActs"></div>
     </header>
     <div id="view"><div class="skel"></div><div class="skel" style="height:260px"></div></div>
@@ -1305,10 +1345,16 @@ $('#lgForgot').onclick = async () => {
 
 /* ═════ Sesión y datos en tiempo real ═════ */
 let ME = null, PROF = null, T = {}, U = {}, I = {}, loaded = { t: 0, u: 0, i: 0 }, LIS = [], profAsked = false;
+function bootDone() { const b = $('#boot'); if (!b || b.classList.contains('out')) return; b.classList.add('out'); setTimeout(() => b.remove(), 450); }
+function paintShell() {
+  $$('#nav .nv, #tabbar button').forEach(b => b.dataset.v === VIEW ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current'));
+  $('#top').hidden = VIEW === 'resumen'; $('#vTitle').textContent = VIEW === 'resumen' ? '' : VIEWS[VIEW].t; $('#vSub').textContent = VIEW === 'resumen' ? '' : VIEWS[VIEW].p;
+}
+setTimeout(bootDone, 6000);
 auth.onAuthStateChanged(u => {
-  ME = u;
+  ME = u; bootDone();
   if (!u) { stopData(); $('#app').hidden = true; $('#tabbar').hidden = true; $('#login').hidden = false; setLMode('in'); return; }
-  $('#login').hidden = true; $('#app').hidden = false; $('#tabbar').hidden = false; startData();
+  paintShell(); $('#login').hidden = true; $('#app').hidden = false; $('#tabbar').hidden = false; startData();
 });
 function startData() {
   if (LIS.length) return;
@@ -1956,6 +2002,28 @@ function paneReg(L) {
     $('#iQ').value = FI.q; $('#iQ').oninput = e => { FI.q = e.target.value; drawReg(filtI()); }; }
   drawReg(L);
 }
+/* Actualiza el DOM sin reconstruirlo: sin parpadeos al sincronizar */
+function morphNode(a, b) {
+  if (a.nodeType !== b.nodeType || a.nodeName !== b.nodeName) { a.replaceWith(b.cloneNode(true)); return; }
+  if (a.nodeType === 3) { if (a.nodeValue !== b.nodeValue) a.nodeValue = b.nodeValue; return; }
+  if (a.nodeType !== 1) return;
+  for (const at of [...a.attributes]) if (!b.hasAttribute(at.name)) a.removeAttribute(at.name);
+  for (const at of [...b.attributes]) if (a.getAttribute(at.name) !== at.value) a.setAttribute(at.name, at.value);
+  morphKids(a, b);
+}
+function morphKids(a, b) {
+  const ak = [...a.childNodes], bk = [...b.childNodes];
+  const key = n => n.nodeType === 1 ? (n.getAttribute('data-id') || n.getAttribute('data-k')) : null, map = new Map();
+  ak.forEach(n => { const k = key(n); if (k) map.set(k, n); });
+  bk.forEach((nb, i) => {
+    const k = key(nb); let na = k ? map.get(k) : ak[i] && !key(ak[i]) ? ak[i] : null;
+    if (!na) { a.insertBefore(nb.cloneNode(true), a.childNodes[i] || null); return; }
+    if (a.childNodes[i] !== na) a.insertBefore(na, a.childNodes[i] || null);
+    morphNode(na, nb);
+  });
+  while (a.childNodes.length > bk.length) a.lastChild.remove();
+}
+function morphInto(el, html) { const t = document.createElement('div'); t.innerHTML = html; morphKids(el, t); }
 function inspMembers(all) {
   const map = {};
   users().filter(u => u.subs && u.subs.ins).forEach(u => map[u.uid] = { u, L: [] });
@@ -1965,7 +2033,7 @@ function inspMembers(all) {
 function drawReg(base0) {
   const mem = inspMembers(base0), mine = base0.filter(isMineI), sel = RVU && mem.find(m => m.u.uid === RVU);
   if (RV === 'member' && !sel) RV = 'team';
-  $('#rgV').innerHTML = [['mine', 'Mis inspecciones', mine.length, 'user'], ['team', 'Integrantes', mem.length, 'users'], ['all', 'Todas', base0.length, 'shield']].map(([k, n, c, i]) => `<button class="fchip" data-v="${k}" aria-pressed="${RV === k || (k === 'team' && RV === 'member')}">${ico(i)}<span>${n}</span><b>${c}</b></button>`).join('');
+  setH($('#rgV'), [['mine', 'Mis inspecciones', mine.length, 'user'], ['team', 'Integrantes', mem.length, 'users'], ['all', 'Todas', base0.length, 'shield']].map(([k, n, c, i]) => `<button class="fchip" data-v="${k}" aria-pressed="${RV === k || (k === 'team' && RV === 'member')}">${ico(i)}<span>${n}</span><b>${c}</b></button>`).join(''));
   $$('#rgV .fchip').forEach(b => b.onclick = () => { RV = b.dataset.v; RVU = null; localStorage.setItem('copasst_rv', RV); drawReg(filtI()); });
   const team = RV === 'team';
   $('#rgSt').hidden = team; $('#rgF').hidden = team; $('#rgList').hidden = team;
@@ -1983,24 +2051,26 @@ function drawReg(base0) {
   const base = RV === 'mine' ? mine : RV === 'member' ? sel.L : base0;
   const done = base.filter(x => !isCurso(x)), cur = base.filter(isCurso), L = (FI.est === 'curso' ? cur : FI.est === 'comp' ? done : base).slice().sort((a, b) => isCurso(b) - isCurso(a));
   const avg = done.length ? Math.round(done.reduce((a, x) => a + (x.pct || 0), 0) / done.length) : null, sin = ncSinTarea(done);
-  $('#rgSt').innerHTML = [
+  setH($('#rgSt'), [
     ['shield', done.length, 'Realizadas', '#E5F5EC', '#14915B'], ['play', cur.length, 'En curso', '#EBF0FD', '#1F47B8'],
     ['chart', avg == null ? '—' : avg + '%', 'Cumplimiento promedio', avg == null ? '#EDF0F5' : avg >= 90 ? '#E5F5EC' : avg >= 70 ? '#FFF3D9' : '#FDEBE9', avg == null ? '#66748C' : pctColor(avg)],
     ['flag', sin, 'Hallazgos sin gestionar', sin ? '#FDEBE9' : '#E5F5EC', sin ? '#D8443A' : '#14915B']
-  ].map(([i, v, l, b, f]) => `<div class="st" style="--sb:${b};--sf:${f}"><span class="ic">${ico(i)}</span><div><b>${v}</b><small>${l}</small></div></div>`).join('');
-  $('#rgEst').innerHTML = [['', 'Todas', base.length], ['curso', 'En curso', cur.length], ['comp', 'Realizadas', done.length]].map(([k, n, c]) => `<button class="fchip" data-k="${k}" aria-pressed="${FI.est === k}">${n} <b>${c}</b></button>`).join('');
+  ].map(([i, v, l, b, f]) => `<div class="st" style="--sb:${b};--sf:${f}"><span class="ic">${ico(i)}</span><div><b>${v}</b><small>${l}</small></div></div>`).join(''));
+  setH($('#rgEst'), [['', 'Todas', base.length], ['curso', 'En curso', cur.length], ['comp', 'Realizadas', done.length]].map(([k, n, c]) => `<button class="fchip" data-k="${k}" aria-pressed="${FI.est === k}">${n} <b>${c}</b></button>`).join(''));
   $$('#rgEst .fchip').forEach(b => b.onclick = () => { FI.est = b.dataset.k; drawReg(filtI()); });
   if (!L.length) { $('#rgList').innerHTML = `<div class="card"><div class="empty" style="padding:48px 16px"><b>${RV === 'mine' ? 'Aún no tienes inspecciones con estos filtros' : 'No hay inspecciones con estos filtros'}</b>Las inspecciones iniciadas desde la lista de verificación aparecerán aquí.<div style="margin-top:16px"><a class="btn pri" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a></div></div></div>`; return; }
+  const CU = L.filter(isCurso), DN = L.filter(x => !isCurso(x));
   let html = '', g = '';
   L.forEach(x => {
-    const cu = isCurso(x), k = cu ? 'curso' : (x.fecha || '').slice(0, 7), ans = (x.si || 0) + (x.no || 0) + (x.na || 0), tot = ans + (x.pend || 0) || 1;
-    if (k !== g) { g = k; const n = cu ? L.filter(isCurso).length : L.filter(y => !isCurso(y) && (y.fecha || '').startsWith(k)).length; html += `<div class="igrp ${cu ? 'cu' : ''}">${cu ? 'En curso · para continuar' : k ? MESL[+k.slice(5) - 1] + ' ' + k.slice(0, 4) : 'Sin fecha'}<span>${n} inspección${n === 1 ? '' : 'es'}</span></div>`; }
-    html += `<div class="irow ${cu ? 'curso' : ''}" role="button" tabindex="0" data-id="${x.id}" data-cu="${cu ? 1 : 0}"><span class="ilogo"><img src="${LOGOS[x.empresa] || LOGOS.COPASST}" alt="${esc(x.empresa)}" loading="lazy"></span>
-      <span style="min-width:0"><b>${x.sede ? esc(x.sede) : '<i class="nos">Sede sin asignar</i>'}${x.area ? ` · ${esc(x.area)}` : ''}<span class="est ${cu ? 'curso' : 'comp'}">${cu ? '<i></i>En curso' : 'Realizada'}</span></b><small>${fdl(x.fecha)} · ${esc(x.inspector || 'Sin inspector')}${cu ? ` · ${ans} de ${tot} ítems respondidos` : ''}</small>${cu ? `<span class="iprog"><i style="width:${Math.round(ans / tot * 100)}%"></i></span>` : ''}</span>
+    const cu = isCurso(x), k = cu ? 'curso' : (x.fecha || '').slice(0, 7), ans = (x.si || 0) + (x.no || 0) + (x.na || 0), pc = x.pct || 0;
+    if (k !== g) { g = k; const n = cu ? CU.length : DN.filter(y => (y.fecha || '').startsWith(k)).length; html += `<div class="igrp ${cu ? 'cu' : ''}" data-k="g${k}">${cu ? 'En curso · para continuar' : k ? MESL[+k.slice(5) - 1] + ' ' + k.slice(0, 4) : 'Sin fecha'}<span>${n} inspección${n === 1 ? '' : 'es'}</span></div>`; }
+    const ring = cu && !ans ? `<span class="ring off"><b>—</b></span>` : `<span class="ring" style="--p:${pc};--rc:${pctColor(pc)}"><b>${pc}%</b></span>`;
+    html += `<div class="irow ${cu ? 'curso' : ''}" role="button" tabindex="0" data-id="${x.id}" data-cu="${cu ? 1 : 0}"><span class="ilogo"><img src="${LOGOS[x.empresa] || LOGOS.COPASST}" alt="${esc(x.empresa)}"></span>
+      <span style="min-width:0"><b>${x.sede ? esc(x.sede) : '<i class="nos">Sede sin asignar</i>'}${x.area ? ` · ${esc(x.area)}` : ''}<span class="est ${cu ? 'curso' : 'comp'}">${cu ? '<i></i>En curso' : 'Realizada'}</span></b><small>${fdl(x.fecha)} · ${esc(x.inspector || 'Sin inspector')}${cu ? ` · ${ans ? `${ans} ítem${ans === 1 ? '' : 's'} evaluado${ans === 1 ? '' : 's'}` : 'sin respuestas aún'}` : ''}</small></span>
       <span class="ichips"><span><i style="background:var(--c)"></i>${x.si || 0}</span><span><i style="background:var(--nc)"></i>${x.no || 0}</span><span><i style="background:#A9B4C6"></i>${x.na || 0}</span></span>
-      ${cu ? `<a class="cont" href="${LISTA_URL}?id=${encodeURIComponent(x.id)}">${ico('play')}Continuar</a>` : `<span class="ring" style="--p:${x.pct || 0};--rc:${pctColor(x.pct || 0)}"><b>${x.pct || 0}%</b></span><span class="chv">${ico('right')}</span>`}</div>`;
+      ${ring}${cu ? `<a class="cont" href="${LISTA_URL}?id=${encodeURIComponent(x.id)}">${ico('play')}Continuar</a>` : `<span class="chv">${ico('right')}</span>`}</div>`;
   });
-  $('#rgList').innerHTML = `<div class="ilist">${html}</div>`;
+  morphInto($('#rgList'), html ? `<div class="ilist">${html}</div>` : '');
   $$('#rgList .irow').forEach(r => { const go1 = () => r.dataset.cu === '1' ? (location.href = `${LISTA_URL}?id=${encodeURIComponent(r.dataset.id)}`) : openInsp(r.dataset.id); r.onclick = e => { if (e.target.closest('.cont')) return; go1(); }; r.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go1(); } }; });
 }
 
