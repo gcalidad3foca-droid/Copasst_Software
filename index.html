@@ -956,6 +956,56 @@ body.dashfit .bi{gap:16px}
 .btl i{display:block;width:40%;height:100%;border-radius:4px;background:var(--brand);animation:btl 1.1s cubic-bezier(.65,0,.35,1) infinite}
 @keyframes btl{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
 #app:not([hidden]){animation:fade .35s ease}
+/* ── Eliminar y papelera ── */
+.irow{grid-template-columns:76px minmax(0,1fr) auto auto auto auto}
+.idel{width:36px;height:36px;border-radius:11px;border:0;background:transparent;color:#A3AEC2;display:grid;place-items:center;transition:background .2s,color .2s,opacity .2s,transform .2s;opacity:.0}
+.irow:hover .idel,.irow:focus-within .idel{opacity:1}
+.idel:hover{background:var(--nc-bg);color:var(--nc-ink)}
+.idel:active{transform:scale(.92)}
+.idel svg{width:18px;height:18px}
+.irow.bye,.pap.bye{animation:bye .3s cubic-bezier(.4,0,.2,1) forwards;pointer-events:none}
+@keyframes bye{to{opacity:0;transform:translate3d(24px,0,0)}}
+@media (hover:none){.idel{opacity:1}}
+.ptog{position:relative;gap:7px}
+.ptog .papn{min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:var(--nc);color:#fff;font-size:11px;font-weight:800;display:inline-grid;place-items:center}
+.itop{gap:10px}
+.itop .ptog{margin-left:auto}
+#dPap{width:min(680px,calc(100vw - 24px))}
+.papn-note{display:flex;gap:10px;align-items:flex-start;padding:11px 14px;border-radius:14px;background:var(--wash);box-shadow:inset 0 0 0 1px var(--line-2);font-size:13px;color:var(--ink-2);font-weight:500;margin-bottom:14px}
+.papn-note svg{flex:none;width:18px;height:18px;color:var(--muted);margin-top:1px}
+.papl{display:grid;gap:10px}
+.pap{display:grid;grid-template-columns:64px minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:12px 14px;border-radius:18px;background:#fff;box-shadow:var(--sh-1),0 0 0 1px var(--line);animation:kin .45s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d,0ms)}
+.pap .ilogo{width:64px;height:44px;filter:grayscale(.35);opacity:.9}
+.pap-i{min-width:0}.pap-i b{display:block;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pap-i small{display:block;font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pap-m{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:#8A94A8;margin-top:4px}.pap-m svg{width:13px;height:13px}
+.pap-d{display:grid;justify-items:center;gap:2px}.pap-d small{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.pap-c{--p:100;width:42px;height:42px;border-radius:50%;background:conic-gradient(var(--brand) calc(var(--p)*1%),#EDF0F6 0);display:grid;place-items:center;position:relative}
+.pap-c::before{content:"";position:absolute;inset:4px;border-radius:50%;background:#fff}
+.pap-c b{position:relative;font-size:13px;font-weight:800;color:var(--ink)}
+.pap-d.urg .pap-c{background:conic-gradient(var(--nc) calc(var(--p)*1%),#FDEBE9 0)}.pap-d.urg .pap-c b{color:var(--nc-ink)}
+.pap-a{display:flex;gap:6px;align-items:center}
+.iconbtn.dng{color:var(--nc-ink)}.iconbtn.dng:hover{background:var(--nc-bg)}
+.pap-e{display:grid;justify-items:center;text-align:center;gap:6px;padding:38px 16px;color:var(--muted);font-size:13.5px}
+.pap-e span{width:58px;height:58px;border-radius:18px;background:var(--wash);display:grid;place-items:center;color:#A3AEC2;margin-bottom:6px;box-shadow:inset 0 0 0 1px var(--line-2)}.pap-e span svg{width:28px;height:28px}
+.pap-e b{color:var(--ink);font-size:15px}
+#toastAct{margin-left:6px;border:0;background:rgba(255,255,255,.14);color:#fff;font-weight:800;font-size:13px;height:30px;padding:0 12px;border-radius:99px;cursor:pointer;pointer-events:auto}
+#toastAct:hover{background:rgba(255,255,255,.24)}
+#toast{pointer-events:auto}
+@media (max-width:760px){
+  #dPap,#dRep{width:100%}
+  .irow{grid-template-columns:60px minmax(0,1fr) auto auto}
+  .irow .idel{width:34px;height:34px}
+  .irow.curso{grid-template-columns:54px minmax(0,1fr) auto}
+  .irow.curso .idel{grid-row:2;grid-column:3;justify-self:end}
+  .itop{grid-template-columns:minmax(0,1fr) auto auto}
+  .ptog{width:46px;height:46px;padding:0;justify-content:center;border-radius:14px}.ptog svg{width:20px;height:20px}
+  .ptog .papn{position:absolute;top:-5px;right:-5px;box-shadow:0 0 0 2px var(--bg)}
+  .pap{grid-template-columns:52px minmax(0,1fr) auto;gap:10px;padding:12px}
+  .pap .ilogo{width:52px;height:38px}
+  .pap-a{grid-column:1/-1;justify-content:flex-end}
+}
+#toast{width:max-content;max-width:calc(100vw - 32px)}
 </style>
 </head>
 <body>
@@ -1008,6 +1058,7 @@ body.dashfit .bi{gap:16px}
   <symbol id="i-st-pend" viewBox="0 0 256 256"><path d="M92.38,38.05A12,12,0,0,1,101,23.42a108,108,0,0,1,54,0,12,12,0,1,1-6,23.23,84.11,84.11,0,0,0-42,0A12,12,0,0,1,92.38,38.05ZM50.94,52.34a108.1,108.1,0,0,0-27,46.76,12,12,0,0,0,8.37,14.77,12.2,12.2,0,0,0,3.2.43,12,12,0,0,0,11.56-8.8,84,84,0,0,1,21-36.35A12,12,0,1,0,50.94,52.34Zm-3.88,98.14a12,12,0,0,0-23.12,6.42,108,108,0,0,0,27,46.78A12,12,0,0,0,68,186.85,84,84,0,0,1,47.06,150.48ZM149,209.35a84,84,0,0,1-42,0,12,12,0,1,0-6,23.23,108,108,0,0,0,54,0,12,12,0,1,0-6-23.23Zm74.72-67.22A12,12,0,0,0,209,150.5a84,84,0,0,1-21,36.35,12,12,0,0,0,17.12,16.82,108.19,108.19,0,0,0,27-46.77A12,12,0,0,0,223.71,142.13Zm-14.77-36.61a12,12,0,0,0,23.12-6.42,108,108,0,0,0-27-46.78A12,12,0,1,0,188,69.15,84,84,0,0,1,208.94,105.52Z"/></symbol>
   <symbol id="i-st-curso" viewBox="0 0 256 256"><path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212Z"/><path d="M128,60a68,68,0,0,1,0,136Z"/></symbol>
   <symbol id="i-st-comp" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 256 256"><path d="M228,128a100,100,0,0,1-98.66,100H128a99.39,99.39,0,0,1-68.62-27.29,12,12,0,0,1,16.48-17.45,76,76,0,1,0-1.57-109c-.13.13-.25.25-.39.37L54.89,92H72a12,12,0,0,1,0,24H24a12,12,0,0,1-12-12V56a12,12,0,0,1,24,0V76.72L57.48,57.06A100,100,0,0,1,228,128Z"/></symbol>
 </svg>
 
 <!-- ═════ Ingreso ═════ -->
@@ -1125,6 +1176,13 @@ body.dashfit .bi{gap:16px}
   <div class="df"><button class="btn sm" id="mlTest" type="button">Enviar prueba</button><button class="btn sm" id="mlDig" type="button">Enviar resumen ahora</button><span class="sp"></span><button class="btn" data-close type="button">Cancelar</button><button class="btn pri" id="mlSave" type="button"><svg class="i"><use href="#i-check"/></svg>Guardar</button></div>
 </dialog>
 
+<!-- Papelera -->
+<dialog id="dPap" aria-labelledby="papT">
+  <div class="dh"><div class="t"><h3 id="papT">Papelera de inspecciones</h3><p id="papSub"></p></div><button class="iconbtn" data-close aria-label="Cerrar"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="db"><div class="papn-note"><svg class="i"><use href="#i-clock"/></svg><span>Las inspecciones se pueden restaurar con todas sus respuestas y fotos. Pasados 30 días se borran solas.</span></div><div id="papL" class="papl"></div></div>
+  <div class="df"><button class="btn sm dng" id="papAll" type="button"><svg class="i"><use href="#i-trash"/></svg>Vaciar papelera</button><span class="sp"></span><button class="btn" data-close type="button">Cerrar</button></div>
+</dialog>
+
 <!-- Informe -->
 <dialog id="dRep" aria-labelledby="rpT">
   <div class="dh"><div class="t"><h3 id="rpT">Generar informe</h3><p id="rpP"></p></div><button class="iconbtn" data-close aria-label="Cerrar"><svg class="i"><use href="#i-x"/></svg></button></div>
@@ -1148,7 +1206,7 @@ body.dashfit .bi{gap:16px}
 </dialog>
 
 <div id="loader"><div class="box"><div class="sp"></div><b id="ldT">Procesando…</b><span id="ldS">Por favor espere</span><div class="pg"><i id="ldP"></i></div></div></div>
-<div id="toast" role="status" aria-live="polite"><svg class="i"><use href="#i-check"/></svg><span id="toastTx"></span></div>
+<div id="toast" role="status" aria-live="polite"><svg class="i"><use href="#i-check"/></svg><span id="toastTx"></span><button type="button" id="toastAct" hidden></button></div>
 
 <script>
 'use strict';
@@ -1229,7 +1287,7 @@ const DEB = {};
 const deb = (k, fn, ms = 700) => { clearTimeout(DEB[k]); DEB[k] = setTimeout(fn, ms); };
 const MOB = () => matchMedia('(max-width:760px)').matches;
 let toastT;
-function toast(msg, err) { const t = $('#toast'); $('#toastTx').textContent = msg; t.classList.toggle('err', !!err); t.querySelector('use').setAttribute('href', err ? '#i-alert' : '#i-check'); t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 3400); }
+function toast(msg, err, act) { const t = $('#toast'), b = $('#toastAct'); b.hidden = !act; if (act) { b.textContent = act.t; b.onclick = () => { t.classList.remove('on'); act.fn(); }; } $('#toastTx').textContent = msg; t.classList.toggle('err', !!err); t.querySelector('use').setAttribute('href', err ? '#i-alert' : '#i-check'); t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), act ? 6000 : 3400); }
 function loader(on, t, s, p) { $('#loader').classList.toggle('on', on); if (t) $('#ldT').textContent = t; if (s) $('#ldS').textContent = s; $('#ldP').style.width = (p || 0) + '%'; $('#ldP').parentElement.hidden = p == null; }
 const _dclose = HTMLDialogElement.prototype.close;
 HTMLDialogElement.prototype.close = function (r) {
@@ -1359,9 +1417,10 @@ function startData() {
   on('tareas', s => { T = s.val() || {}; loaded.t = 1; render(); });
   on('usuarios', s => { U = s.val() || {}; loaded.u = 1; PROF = U[ME.uid] || null; NAMEMAP = {}; Object.entries(U).forEach(([id, u]) => { if (u.nombre) NAMEMAP[u.nombre] = { ...u, uid: id }; }); afterProfile(); render(); });
   on('inspecciones', s => { I = s.val() || {}; loaded.i = 1; render(); });
+  on('papelera/inspecciones', s => { PAP = s.val() || {}; purgeTrash(); updPap(); if (VIEW === 'inspecciones' && loaded.t) render(); });
   on('config/correo', s => { MAILC = s.val() || { url: '', token: '' }; if (typeof updMail === 'function') updMail(); });
 }
-function stopData() { LIS.forEach(r => r.off()); LIS = []; T = {}; U = {}; I = {}; loaded = { t: 0, u: 0, i: 0 }; PROF = null; built = null; profAsked = false; CARDS.clear(); OPEN.clear(); }
+function stopData() { LIS.forEach(r => r.off()); LIS = []; PAP = {}; T = {}; U = {}; I = {}; loaded = { t: 0, u: 0, i: 0 }; PROF = null; built = null; profAsked = false; CARDS.clear(); OPEN.clear(); }
 function err(e) { console.warn(e); $('#offBanner').hidden = false; }
 db.ref('.info/connected').on('value', s => {
   const on = !!s.val(); $('#conn').classList.toggle('on', on); $('#conn2').classList.toggle('on', on);
@@ -1963,11 +2022,12 @@ const paneEnter = () => { const pn = $('#iPane'); if (!pn) return; pn.style.anim
 function buildInsp() {
   setActs(`<a class="btn pri" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a>`); ipane = null;
   $('#view').innerHTML = `
-    <div class="itop"><div class="seg" id="iTabs">${[['reg', 'Registros', 'shield'], ['dash', 'Dashboard', 'chart']].map(([k, n, i]) => `<button class="fchip" data-t="${k}" aria-pressed="false">${ico(i)}${n}</button>`).join('')}</div><button class="btn sm ftog" id="iFt" type="button" aria-label="Filtros" title="Filtros">${ico('funnel')}</button><a class="btn pri itop-n" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a></div>
+    <div class="itop"><div class="seg" id="iTabs">${[['reg', 'Registros', 'shield'], ['dash', 'Dashboard', 'chart']].map(([k, n, i]) => `<button class="fchip" data-t="${k}" aria-pressed="false">${ico(i)}${n}</button>`).join('')}</div><button class="btn sm ptog" id="iPap" type="button" title="Papelera">${ico('trash')}<span class="lf">Papelera</span><b class="papn" hidden>0</b></button><button class="btn sm ftog" id="iFt" type="button" aria-label="Filtros" title="Filtros">${ico('funnel')}</button><a class="btn pri itop-n" href="${LISTA_URL}">${ico('plus')}Nueva inspección</a></div>
     <div class="ibar" id="iBar"><div class="ents">${[['all', 'Todas'], ...Object.keys(SEDES).map(k => [k, k])].map(([k, n]) => `<button class="ent" data-e="${k}" aria-pressed="false" title="${k === 'all' ? 'Todas las empresas' : EMP_N[k]}">${k === 'all' ? `<span>${ico('shield')}Todas</span>` : `<img src="${LOGOS[k]}" alt="${n}">`}</button>`).join('')}</div>
       <div class="isels"><select class="sel" id="iSede" aria-label="Sede"></select><select class="sel" id="iArea" aria-label="Área"></select><select class="sel" id="iYear" aria-label="Año"></select><select class="sel" id="iMes" aria-label="Mes"></select></div></div>
     <div id="iPane"></div>`;
   $$('#iTabs .fchip').forEach(b => b.onclick = () => { IV = b.dataset.t; localStorage.setItem('copasst_iv', IV); updInsp(); });
+  $('#iPap').onclick = openPap; updPap();
   $('#iFt').onclick = () => { const o = document.body.classList.toggle('fopen'); $('#iFt').setAttribute('aria-pressed', o); };
   $$('#iBar .ent').forEach(b => b.onclick = () => { FI.emp = b.dataset.e; FI.sede = ''; updInsp(); });
   [['#iSede', 'sede'], ['#iArea', 'area'], ['#iYear', 'year'], ['#iMes', 'mes']].forEach(([s, k]) => $(s).onchange = e => { FI[k] = e.target.value; updInsp(); });
@@ -2021,6 +2081,58 @@ function morphKids(a, b) {
   while (a.childNodes.length > bk.length) a.lastChild.remove();
 }
 function morphInto(el, html) { const t = document.createElement('div'); t.innerHTML = html; morphKids(el, t); }
+/* ── Papelera de inspecciones: se conservan 30 días ── */
+let PAP = {}, purged = false;
+const TRASH_DAYS = 30, DAY = 864e5;
+const daysLeft = e => Math.max(0, Math.ceil(((e.deletedAt || 0) + TRASH_DAYS * DAY - Date.now()) / DAY));
+function purgeTrash() {
+  if (purged || !db) return; const m = {};
+  Object.entries(PAP).forEach(([id, e]) => { if (!e || (e.deletedAt || 0) + TRASH_DAYS * DAY < Date.now()) m['papelera/inspecciones/' + id] = null; });
+  if (Object.keys(m).length) { purged = true; db.ref(ROOT).update(m).catch(() => { purged = false; }); }
+}
+async function trashInsp(id, ask = true) {
+  const x = I[id]; if (!x) return;
+  const nm = `${x.sede || 'Sede sin asignar'}${x.area ? ' · ' + x.area : ''}`;
+  if (ask && !await confirmDlg(`«${nm}» irá a la papelera. Podrá restaurarla durante ${TRASH_DAYS} días; después se borrará definitivamente. Las tareas generadas desde ella se conservan.`, 'Enviar a la papelera', 'Eliminar inspección')) return;
+  const row = $(`.irow[data-id="${CSS.escape(id)}"]`); if (row) { row.classList.add('bye'); await new Promise(r => setTimeout(r, 280)); }
+  try {
+    await db.ref(ROOT).update({ ['inspecciones/' + id]: null, ['papelera/inspecciones/' + id]: { data: x, deletedAt: Date.now(), deletedBy: (PROF && PROF.nombre) || (ME && ME.email) || '' } });
+    toast('Inspección enviada a la papelera', false, { t: 'Deshacer', fn: () => restoreInsp(id, true) });
+  } catch (e) { if (row) row.classList.remove('bye'); toast('No se pudo eliminar: ' + e.message, true); }
+}
+async function restoreInsp(id, quiet) {
+  const e = PAP[id]; if (!e || !e.data) return;
+  try { await db.ref(ROOT).update({ ['inspecciones/' + id]: e.data, ['papelera/inspecciones/' + id]: null }); toast(quiet ? 'Inspección restaurada' : `«${e.data.sede || 'Inspección'}» restaurada`); }
+  catch (x) { toast('No se pudo restaurar: ' + x.message, true); }
+}
+async function purgeOne(id) {
+  const e = PAP[id]; if (!e) return;
+  if (!await confirmDlg('Se borrará definitivamente, con sus respuestas y fotos asociadas. Esta acción no se puede deshacer.', 'Borrar definitivamente', 'Borrar para siempre')) return;
+  const it = $(`#papL .pap[data-id="${CSS.escape(id)}"]`); if (it) { it.classList.add('bye'); await new Promise(r => setTimeout(r, 260)); }
+  await ref('papelera/inspecciones/' + id).remove(); toast('Inspección borrada definitivamente');
+}
+function updPap() {
+  const n = Object.keys(PAP).length;
+  $$('.papn').forEach(b => { b.textContent = n; b.hidden = !n; });
+  if ($('#dPap') && $('#dPap').open) drawPap();
+}
+function openPap() { drawPap(); openDlg($('#dPap')); }
+$('#papAll').onclick = async () => { const ids = Object.keys(PAP); if (!ids.length) return; if (!await confirmDlg(`Se borrarán definitivamente ${ids.length} ${ids.length === 1 ? 'inspección' : 'inspecciones'}. Esta acción no se puede deshacer.`, 'Vaciar papelera', 'Vaciar papelera')) return; const m = {}; ids.forEach(id => m['papelera/inspecciones/' + id] = null); await db.ref(ROOT).update(m); toast('Papelera vaciada'); };
+function drawPap() {
+  const L = Object.entries(PAP).map(([id, e]) => ({ id, ...e, x: e.data || {} })).sort((a, b) => (b.deletedAt || 0) - (a.deletedAt || 0));
+  $('#papSub').textContent = L.length ? `${L.length} ${L.length === 1 ? 'inspección' : 'inspecciones'} · se borran automáticamente a los ${TRASH_DAYS} días` : `Las inspecciones eliminadas se guardan aquí ${TRASH_DAYS} días`;
+  $('#papAll').disabled = !L.length;
+  morphInto($('#papL'), L.length ? L.map((e, i) => { const x = e.x, d = daysLeft(e), cu = x.estado === 'curso', urg = d <= 5;
+    return `<div class="pap" data-id="${e.id}" style="--d:${Math.min(i, 8) * 40}ms">
+      <span class="ilogo"><img src="${LOGOS[x.empresa] || LOGOS.COPASST}" alt=""></span>
+      <div class="pap-i"><b>${x.sede ? esc(x.sede) : 'Sede sin asignar'}${x.area ? ' · ' + esc(x.area) : ''}</b>
+        <small>${fd(x.fecha)} · ${esc(x.inspector || 'Sin inspector')} · ${cu ? 'En curso' : `Realizada · ${x.pct || 0}%`}</small>
+        <span class="pap-m">${ico('trash')}Eliminada ${fts(e.deletedAt)}${e.deletedBy ? ' por ' + esc(e.deletedBy) : ''}</span></div>
+      <div class="pap-d ${urg ? 'urg' : ''}"><span class="pap-c" style="--p:${Math.round(d / TRASH_DAYS * 100)}"><b>${d}</b></span><small>día${d === 1 ? '' : 's'}</small></div>
+      <div class="pap-a"><button class="btn sm soft" data-res>${ico('undo')}Restaurar</button><button class="iconbtn dng" data-pur title="Borrar definitivamente" aria-label="Borrar definitivamente">${ico('trash')}</button></div>
+    </div>`; }).join('') : `<div class="pap-e"><span>${ico('trash')}</span><b>La papelera está vacía</b>Cuando elimine una inspección aparecerá aquí y podrá restaurarla durante ${TRASH_DAYS} días.</div>`);
+  $$('#papL .pap').forEach(r => { $('[data-res]', r).onclick = () => restoreInsp(r.dataset.id); $('[data-pur]', r).onclick = () => purgeOne(r.dataset.id); });
+}
 function inspMembers(all) {
   const map = {};
   users().filter(u => u.subs && u.subs.ins).forEach(u => map[u.uid] = { u, L: [] });
@@ -2060,15 +2172,15 @@ function drawReg(base0) {
   let html = '', g = '';
   L.forEach(x => {
     const cu = isCurso(x), k = cu ? 'curso' : (x.fecha || '').slice(0, 7), ans = (x.si || 0) + (x.no || 0) + (x.na || 0), pc = x.pct || 0;
-    if (k !== g) { g = k; const n = cu ? CU.length : DN.filter(y => (y.fecha || '').startsWith(k)).length; html += `<div class="igrp ${cu ? 'cu' : ''}" data-k="g${k}">${cu ? 'En curso · para continuar' : k ? MESL[+k.slice(5) - 1] + ' ' + k.slice(0, 4) : 'Sin fecha'}<span>${n} inspección${n === 1 ? '' : 'es'}</span></div>`; }
+    if (k !== g) { g = k; const n = cu ? CU.length : DN.filter(y => (y.fecha || '').startsWith(k)).length; html += `<div class="igrp ${cu ? 'cu' : ''}" data-k="g${k}">${cu ? 'En curso · para continuar' : k ? MESL[+k.slice(5) - 1] + ' ' + k.slice(0, 4) : 'Sin fecha'}<span>${n} ${n === 1 ? 'inspección' : 'inspecciones'}</span></div>`; }
     const ring = cu && !ans ? `<span class="ring off"><b>—</b></span>` : `<span class="ring" style="--p:${pc};--rc:${pctColor(pc)}"><b>${pc}%</b></span>`;
     html += `<div class="irow ${cu ? 'curso' : ''}" role="button" tabindex="0" data-id="${x.id}" data-cu="${cu ? 1 : 0}"><span class="ilogo"><img src="${LOGOS[x.empresa] || LOGOS.COPASST}" alt="${esc(x.empresa)}"></span>
       <span style="min-width:0"><b>${x.sede ? esc(x.sede) : '<i class="nos">Sede sin asignar</i>'}${x.area ? ` · ${esc(x.area)}` : ''}<span class="est ${cu ? 'curso' : 'comp'}">${cu ? '<i></i>En curso' : 'Realizada'}</span></b><small>${fdl(x.fecha)} · ${esc(x.inspector || 'Sin inspector')}${cu ? ` · ${ans ? `${ans} ítem${ans === 1 ? '' : 's'} evaluado${ans === 1 ? '' : 's'}` : 'sin respuestas aún'}` : ''}</small></span>
       <span class="ichips"><span><i style="background:var(--c)"></i>${x.si || 0}</span><span><i style="background:var(--nc)"></i>${x.no || 0}</span><span><i style="background:#A9B4C6"></i>${x.na || 0}</span></span>
-      ${ring}${cu ? `<a class="cont" href="${LISTA_URL}?id=${encodeURIComponent(x.id)}">${ico('play')}Continuar</a>` : `<span class="chv">${ico('right')}</span>`}</div>`;
+      ${ring}${cu ? `<a class="cont" href="${LISTA_URL}?id=${encodeURIComponent(x.id)}">${ico('play')}Continuar</a>` : `<span class="chv">${ico('right')}</span>`}<button type="button" class="idel" title="Eliminar inspección" aria-label="Eliminar inspección">${ico('trash')}</button></div>`;
   });
   morphInto($('#rgList'), html ? `<div class="ilist">${html}</div>` : '');
-  $$('#rgList .irow').forEach(r => { const go1 = () => r.dataset.cu === '1' ? (location.href = `${LISTA_URL}?id=${encodeURIComponent(r.dataset.id)}`) : openInsp(r.dataset.id); r.onclick = e => { if (e.target.closest('.cont')) return; go1(); }; r.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go1(); } }; });
+  $$('#rgList .irow').forEach(r => { const go1 = () => r.dataset.cu === '1' ? (location.href = `${LISTA_URL}?id=${encodeURIComponent(r.dataset.id)}`) : openInsp(r.dataset.id); r.onclick = e => { if (e.target.closest('.cont')) return; if (e.target.closest('.idel')) { e.stopPropagation(); trashInsp(r.dataset.id); return; } go1(); }; r.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go1(); } }; });
 }
 
 function setH(el, h) { if (el && el.dataset.h !== h) { el.innerHTML = h; el.dataset.h = h; } }
@@ -2193,7 +2305,7 @@ function paneRep(L) {
   $$('.fmt').forEach(x => x.setAttribute('aria-pressed', x.dataset.f === REP.fmt));
   $('#rpPer').value = periodo(L);
   const avg = L.length ? Math.round(L.reduce((a, x) => a + (x.pct || 0), 0) / L.length) : 0, ph = L.reduce((a, x) => a + Object.values(x.items || {}).reduce((b, it) => b + (it.fotos || []).length, 0), 0);
-  $('#rpCs').textContent = `${L.length} inspección${L.length === 1 ? '' : 'es'} seleccionada${L.length === 1 ? '' : 's'}`;
+  $('#rpCs').textContent = `${L.length} ${L.length === 1 ? 'inspección' : 'inspecciones'} seleccionada${L.length === 1 ? '' : 's'}`;
   $('#rpPv').innerHTML = `<div><span>Inspecciones</span><b>${L.length}</b></div><div><span>Cumplimiento promedio</span><b style="color:${L.length ? pctColor(avg) : 'inherit'}">${L.length ? avg + '%' : '—'}</b></div><div><span>Hallazgos no conformes</span><b>${L.reduce((a, x) => a + (x.no || 0), 0)}</b></div><div><span>Fotos de evidencia</span><b>${REP.fotos ? ph : 0}</b></div>`;
   $('#rpL').innerHTML = L.length ? L.map(x => `<button class="srow" data-id="${x.id}"><img src="${LOGOS[x.empresa] || LOGOS.COPASST}" alt=""><span class="n">${esc(x.sede)}${x.area ? ' · ' + esc(x.area) : ''}<small>${fd(x.fecha)} · ${esc(x.inspector || '')}</small></span><span class="p" style="color:${pctColor(x.pct || 0)}">${x.pct || 0}%</span></button>`).join('') : `<div class="empty"><b>Sin inspecciones</b>Ajuste los filtros de arriba.</div>`;
   $$('#rpL .srow').forEach(b => b.onclick = () => openInsp(b.dataset.id));
@@ -2446,8 +2558,7 @@ function renderInsp() {
   $$('#inBody [data-open]').forEach(b => b.onclick = () => { $('#dInsp').close(); openTask(b.dataset.open); });
 }
 $('#inDel').onclick = async () => {
-  if (!await confirmDlg('Se eliminará la inspección del registro y del dashboard. Las tareas generadas desde ella se conservan.', 'Eliminar', 'Eliminar inspección')) return;
-  const id = inspId; $('#dInsp').close(); await ref('inspecciones/' + id).remove(); toast('Inspección eliminada');
+  const id = inspId; $('#dInsp').close(); await new Promise(r => setTimeout(r, 220)); trashInsp(id);
 };
 
 /* ── Mejora: oportunidades y hallazgos con su foto, para que el subcomité los gestione ── */
