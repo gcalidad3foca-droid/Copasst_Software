@@ -291,10 +291,10 @@ textarea.ta:focus{border-color:var(--focus);background:var(--card);box-shadow:0 
   .page{padding:0 14px}
   .toolbar{padding:14px 0 12px}
   .toolbar .grow{display:none}
-  .toolbar .tbtn{flex:1;justify-content:center}
-  .toolbar .tbtn.back{flex:0 0 100%;justify-content:flex-start;border:0;background:none;box-shadow:none;padding:0 4px;height:36px}
-  .hero{border-radius:var(--r-lg);padding:20px 18px}.hband{gap:12px 14px;flex-wrap:wrap}.hband .logo{padding:0;border:0}.hband>div:nth-child(2){flex:1 1 100%;order:3}.hero h1{font-size:25px}.hero p{font-size:14px}.hbody{padding-top:20px}
-  .logo img{height:40px}.estb{order:2;margin-left:auto}
+  .toolbar .tbtn.back{justify-content:flex-start;border:0;background:none;box-shadow:none;padding:0 4px;height:36px}
+  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .hero{border-radius:var(--r-lg);padding:24px 18px 20px}.hband{flex-direction:column;align-items:center;text-align:center;gap:14px}.hband .logo{padding:0;border:0;justify-content:center}.hband>div:nth-child(2){flex:none;width:100%}.hero h1{font-size:23px}.hero p{font-size:13.5px;margin-top:6px}.hbody{padding-top:22px}
+  .logo img{height:58px;max-width:240px}
   .fields{grid-template-columns:minmax(0,1fr);margin-top:20px}
   .tape-in{grid-template-columns:auto 1fr;padding:8px 14px 6px;gap:4px 14px}
   .counts{grid-column:1/-1;order:3;justify-content:space-between;gap:8px;font-size:13px}
@@ -323,6 +323,7 @@ textarea.ta:focus{border-color:var(--focus);background:var(--card);box-shadow:0 
   #toast{bottom:calc(20px + env(safe-area-inset-bottom))}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+#toast{width:max-content;max-width:calc(100vw - 32px)}
 </style>
 </head>
 <body>
@@ -352,15 +353,15 @@ textarea.ta:focus{border-color:var(--focus);background:var(--card);box-shadow:0 
     <a class="tbtn back" href="index.html#inspecciones"><svg class="i"><use href="#i-back"/></svg><span>Panel COPASST</span></a>
     <div class="grow"></div>
     <span class="who" id="who" hidden></span>
-    <button class="tbtn" id="bNewTop" type="button"><svg class="i"><use href="#i-plus"/></svg><span>Nueva</span></button>
-    <button class="tbtn pri" id="bSaveTop" type="button"><svg class="i"><use href="#i-save"/></svg><span>Guardar avance</span></button>
+    <button class="tbtn" id="bNewTop" type="button" hidden><svg class="i"><use href="#i-plus"/></svg><span>Nueva</span></button>
+    <button class="tbtn pri" id="bSaveTop" type="button" hidden><svg class="i"><use href="#i-save"/></svg><span>Guardar avance</span></button>
   </div>
 
   <header class="hero">
     <div class="hband">
       <div class="logo"><img class="ink" src="https://i.imgur.com/F27EdWc.png" alt="COPASST" onerror="this.remove()"></div>
       <div><h1>Inspección de condiciones seguras</h1><p>Lista de verificación del Subcomité de Inspecciones · COPASST Software</p></div>
-      <span class="estb" id="estb"><i></i><span>En curso</span></span>
+      <span class="estb" id="estb" hidden><i></i><span>En curso</span></span>
     </div>
     <div class="hbody">
     <div class="fields">
@@ -638,10 +639,11 @@ async function remoteSave(manual) {
   if (rsBusy) { queueRemote(); return false; }
   rsBusy = true; if (manual) $('#bSaveTop').disabled = $('#bProg').disabled = true;
   try {
+    if (S.id) { const tr = await db.ref(ROOT + '/papelera/inspecciones/' + S.id).once('value'); if (tr.exists()) { if (!S.trashWarn) { S.trashWarn = true; toast('Esta inspección está en la papelera del panel. Restáurela allí para seguir guardando.', true); } return false; } }
     const rec = record(compute(), 'curso'), ref = S.id ? db.ref(ROOT + '/inspecciones/' + S.id) : db.ref(ROOT + '/inspecciones').push();
     rec.createdAt = S.createdAt || Date.now();
     await Promise.race([ref.set(rec), new Promise((_, j) => setTimeout(() => j(new Error('Sin conexión')), 15000))]);
-    const first = !S.id; S.id = ref.key; S.createdAt = rec.createdAt; S.updatedAt = rec.updatedAt; persist(); if (first) { history.replaceState(null, '', '?id=' + encodeURIComponent(S.id)); stateUI(); if (!manual) toast('Inspección iniciada · ya aparece En curso en el panel'); }
+    const first = !S.id; S.id = ref.key; S.createdAt = rec.createdAt; S.updatedAt = rec.updatedAt; persist(); if (first) { history.replaceState(null, '', '?id=' + encodeURIComponent(S.id)); stateUI(); if (!manual) toast('Inspección iniciada · se guarda automáticamente'); }
     $('#savedTx').textContent = 'Avance guardado en el panel'; if (manual) toast('Avance guardado · puede continuarla cuando quiera');
     return true;
   } catch (e) { if (manual) toast('No se pudo guardar el avance: ' + e.message, true); return false; }
@@ -885,7 +887,7 @@ function writeHead() { $('#fecha').value = S.fecha; drawEmp(); fillSedes(); if (
 function stateUI() {
   const cu = S.estado !== 'comp'; $('#estb').className = 'estb ' + (cu ? 'curso' : 'comp'); $('#estb span').textContent = cu ? 'En curso' : 'Realizada';
   $('#bProg').hidden = !cu; $('#bSave').lastChild.textContent = cu ? 'Finalizar inspección' : 'Guardar cambios'; $('#bSaveTop span').textContent = cu ? 'Guardar avance' : 'Guardar cambios';
-  $('#editing').hidden = !S.id; if (S.id) $('#editing span').textContent = cu ? 'Inspección en curso · el avance se guarda solo y puede continuarla cuando quiera desde el panel' : 'Inspección realizada · los cambios actualizan el registro en el panel'; }
+  $('#editing').hidden = !S.id || cu; if (S.id) $('#editing span').textContent = cu ? 'Inspección en curso · el avance se guarda solo y puede continuarla cuando quiera desde el panel' : 'Inspección realizada · los cambios actualizan el registro en el panel'; }
 $('#empresa').addEventListener('click', e => { const b = e.target.closest('.emp'); if (!b || b.dataset.e === S.empresa) return; S.empresa = b.dataset.e; S.empSet = true; drawEmp(); fillSedes(); S.sede = $('#sede').value; touch(); });
 $('#area').addEventListener('change', () => { S.area = $('#area').value; $('#area').classList.remove('err'); touch(); });
 $('#sede').addEventListener('change', () => { S.sede = $('#sede').value; touch(); });
