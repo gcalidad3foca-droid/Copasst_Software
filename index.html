@@ -1443,13 +1443,20 @@ async function compressImage(file, MAX = 1600, square) {
   } catch (e) { /* método clásico */ }
   return new Promise((res, rej) => { const url = URL.createObjectURL(file), im = new Image(); im.onload = () => { const r = draw(im, im.naturalWidth, im.naturalHeight); URL.revokeObjectURL(url); res(r); }; im.onerror = () => { URL.revokeObjectURL(url); rej(new Error('No se pudo leer la imagen')); }; im.src = url; });
 }
-async function uploadCld(dataUrl, folder = CLD_FOLDER) {
-  try {
-    const fd = new FormData(); fd.append('file', dataUrl); fd.append('upload_preset', CLD_PRESET); fd.append('folder', folder);
-    const r = await fetch(CLD_URL, { method: 'POST', body: fd }); const j = await r.json();
-    return j.secure_url || null;
-  } catch (e) { return null; }
+async function uploadCld(dataUrl, folder = CLD_FOLDER, tries = 3) {
+  for (let k = 0; k < tries; k++) {
+    const ac = new AbortController(), to = setTimeout(() => ac.abort(), 25000);
+    try {
+      const fd = new FormData(); fd.append('file', dataUrl); fd.append('upload_preset', CLD_PRESET); fd.append('folder', folder);
+      const r = await fetch(CLD_URL, { method: 'POST', body: fd, signal: ac.signal }); const j = await r.json(); clearTimeout(to);
+      if (j.secure_url) return j.secure_url;
+    } catch (e) { clearTimeout(to); }
+    if (k < tries - 1) await new Promise(r => setTimeout(r, 900 * (k + 1)));
+  }
+  return null;
 }
+const fbMsg = e => { const m = String((e && (e.code || e.message)) || e || ''); return /PERMISSION|permission/.test(m) ? 'su sesión no tiene permiso para escribir. Cierre sesión, vuelva a entrar e intente de nuevo' : /network|offline|Failed to fetch/i.test(m) ? 'revise su conexión a internet e intente de nuevo' : m || 'error desconocido'; };
+const withTimeout = (p, ms) => Promise.race([p.then(() => 'ok'), new Promise(r => setTimeout(() => r('late'), ms))]);
 const r2enc = s => encodeURIComponent(s).replace(/[!*'()]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase());
 const r2hex = b => Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join('');
 async function r2sha(d) { return r2hex(await crypto.subtle.digest('SHA-256', typeof d === 'string' ? new TextEncoder().encode(d) : d)); }
@@ -1645,7 +1652,7 @@ function sigPad(cv) {
       const W = cv.width, H = cv.height, d = x.getImageData(0, 0, W, H).data; let a = W, b = H, c = 0, e = 0;
       for (let yy = 0; yy < H; yy++) for (let xx = 0; xx < W; xx++) if (d[(yy * W + xx) * 4 + 3] > 10) { if (xx < a) a = xx; if (xx > c) c = xx; if (yy < b) b = yy; if (yy > e) e = yy; }
       if (c <= a || e <= b) return null; const pad = 12 * dpr; a = Math.max(0, a - pad); b = Math.max(0, b - pad); c = Math.min(W, c + pad); e = Math.min(H, e + pad);
-      const o = document.createElement('canvas'); o.width = c - a; o.height = e - b; o.getContext('2d').drawImage(cv, a, b, c - a, e - b, 0, 0, c - a, e - b); return o.toDataURL('image/png');
+      const k = Math.min(1, 700 / (c - a)), o = document.createElement('canvas'); o.width = Math.round((c - a) * k); o.height = Math.round((e - b) * k); const g = o.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(cv, a, b, c - a, e - b, 0, 0, o.width, o.height); return o.toDataURL('image/png');
     }
   };
 }
@@ -1654,20 +1661,26 @@ $('#pfSave').onclick = async () => {
   if (!nombre) { $('#pfNom').classList.add('err'); return toast('Escriba su nombre completo', true); }
   if (!Object.keys(PF.emp).length) return toast('Elija la empresa donde trabaja: FOCA, VIU o IMES', true);
   if (!Object.keys(PF.subs).length) return toast('Elija al menos un subcomité', true);
-  if (users().some(u => u.uid !== ME.uid && u.nombre.toLowerCase() === nombre.toLowerCase())) return toast('Ya hay un integrante registrado con ese nombre', true);
+  const norm = v => (v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(), myMail = norm(ME.email);
+  const dup = users().filter(u => u.uid !== ME.uid && norm(u.nombre) === norm(nombre)), same = dup.filter(u => !u.email || norm(u.email) === myMail);
+  if (dup.length > same.length) return toast(`Ya hay otro integrante registrado como "${nombre}" con otro correo. Agregue su segundo apellido o inicial para diferenciarse.`, true);
   let firmaNueva = PF.firmaData || null;
   if (PF.subs.ins && PF.redraw) { firmaNueva = PAD && PAD.dirty ? PAD.png() : null; if (!firmaNueva && !PF.firma) return toast('Como integrante de Inspecciones, agregue su firma', true); }
   const b = $('#pfSave'); b.disabled = true; b.innerHTML = ico('loader', 'spin') + 'Guardando…';
   try {
-    const up = { nombre, cargo, email: ME.email || '', empresas: PF.emp, subs: PF.subs, updatedAt: Date.now() };
+    const up = { nombre, cargo, email: ME.email || '', empresas: PF.emp, subs: PF.subs, updatedAt: Date.now() }; let warn = '';
     if (!PROF) up.createdAt = Date.now();
-    if (PF.fotoData) { const u = await uploadCld(PF.fotoData, CLD_FOLDER + '/usuarios'); if (!u) throw new Error('no se pudo subir la foto'); up.foto = u; }
-    if (firmaNueva) { const u = await uploadCld(firmaNueva, CLD_FOLDER + '/firmas'); if (!u) throw new Error('no se pudo subir la firma'); up.firma = u; }
+    const prev = same[0]; if (prev) { if (!PF.foto && !PF.fotoData && prev.foto) up.foto = prev.foto; if (!firmaNueva && !PF.firma && prev.firma) up.firma = prev.firma; }
+    const [fu, gu] = await Promise.all([PF.fotoData ? uploadCld(PF.fotoData, CLD_FOLDER + '/usuarios') : null, firmaNueva ? uploadCld(firmaNueva, CLD_FOLDER + '/firmas') : null]);
+    if (PF.fotoData) { if (fu) up.foto = fu; else warn = 'La foto no se pudo subir; puede agregarla después desde Mi perfil.'; }
+    if (firmaNueva) up.firma = gu || firmaNueva;
     const old = PROF && PROF.nombre;
-    await ref('usuarios/' + ME.uid).update(up);
-    if (old && old !== nombre) { const m = {}; tasks().filter(t => !t.paraSub && (t.respUid === ME.uid || (t.asignados && t.asignados[ME.uid]) || t.responsable === old)).forEach(t => { if (t.asignados && t.asignados[ME.uid]) { m[`tareas/${t.id}/asignados/${ME.uid}`] = nombre; m[`tareas/${t.id}/responsable`] = Object.entries(t.asignados).map(([u, n]) => u === ME.uid ? nombre : n).join(', '); } else m[`tareas/${t.id}/responsable`] = nombre; }); if (Object.keys(m).length) await db.ref(ROOT).update(m); }
-    const d = $('#dProf'); d.dataset.lock = ''; d.close(); toast('Perfil guardado');
-  } catch (x) { toast('No se pudo guardar el perfil: ' + x.message, true); }
+    const res = await withTimeout(ref('usuarios/' + ME.uid).update(up), 12000);
+    if (same.length) { const m = {}; same.forEach(u => { m[`usuarios/${u.uid}`] = null; tasks().forEach(t => { if (t.asignados && t.asignados[u.uid]) { m[`tareas/${t.id}/asignados/${u.uid}`] = null; m[`tareas/${t.id}/asignados/${ME.uid}`] = nombre; } if (t.respUid === u.uid) m[`tareas/${t.id}/respUid`] = ME.uid; }); insps().forEach(x => { if (x.inspectorUid === u.uid) m[`inspecciones/${x.id}/inspectorUid`] = ME.uid; }); }); db.ref(ROOT).update(m).catch(() => same.forEach(u => ref('usuarios/' + u.uid).remove().catch(() => {}))); }
+    if (res === 'late') warn = 'Su perfil quedó guardado en este equipo y se sincronizará apenas haya conexión.';
+    if (old && old !== nombre) { const m = {}; tasks().filter(t => !t.paraSub && (t.respUid === ME.uid || (t.asignados && t.asignados[ME.uid]) || t.responsable === old)).forEach(t => { if (t.asignados && t.asignados[ME.uid]) { m[`tareas/${t.id}/asignados/${ME.uid}`] = nombre; m[`tareas/${t.id}/responsable`] = Object.entries(t.asignados).map(([u, n]) => u === ME.uid ? nombre : n).join(', '); } else m[`tareas/${t.id}/responsable`] = nombre; }); if (Object.keys(m).length) await withTimeout(db.ref(ROOT).update(m), 8000); }
+    const d = $('#dProf'); d.dataset.lock = ''; d.close(); toast(warn || 'Perfil guardado', !!warn && res !== 'late');
+  } catch (x) { console.warn(x); toast('No se pudo guardar el perfil: ' + fbMsg(x), true); }
   b.disabled = false; b.innerHTML = ico('check') + 'Guardar perfil';
 };
 
