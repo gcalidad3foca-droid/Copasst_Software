@@ -105,7 +105,7 @@ img.ink{opacity:0;transition:opacity .4s ease}img.ink.ok{opacity:1}img.ink.fb{op
 .top p{margin:7px 0 0;color:var(--muted);max-width:62ch}
 .acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .banner{display:flex;gap:10px;align-items:center;padding:12px 16px;border-radius:var(--r-md);background:var(--warn-bg);color:#6f4300;font-weight:600;font-size:14px;margin-bottom:18px}
-#view{animation:vin .42s cubic-bezier(.22,1,.36,1) both}#iPane{animation:vin .32s var(--ease) both}
+#iPane{animation:vin .32s var(--ease) both}
 @keyframes vin{from{opacity:0;transform:translate3d(0,10px,0)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
@@ -1479,18 +1479,19 @@ async function toDataURL(url, t) {
 }
 function inkLogo(img) {
   if (img.dataset.ink) return; img.dataset.ink = '1';
+  try { const c0 = localStorage.getItem('copasst_ink'); if (c0) { img.onload = () => img.classList.add('ok'); img.src = c0; if (img.complete) img.classList.add('ok'); return; } } catch (e) { }
   const fb = () => img.classList.add('fb'), im = new Image(); im.crossOrigin = 'anonymous';
   im.onload = () => {
     try {
       const c = document.createElement('canvas'), w = c.width = im.naturalWidth, h = c.height = im.naturalHeight, x = c.getContext('2d'); x.drawImage(im, 0, 0);
       const d = x.getImageData(0, 0, w, h), q = d.data;
       for (let i = 0; i < q.length; i += 4) { if (q[i + 3] < 6) continue; const mn = Math.min(q[i], q[i + 1], q[i + 2]), mx = Math.max(q[i], q[i + 1], q[i + 2]); if (mn > 196 && mx - mn < 36) { q[i] = 27; q[i + 1] = 53; q[i + 2] = 107; } }
-      x.putImageData(d, 0, 0); const u = c.toDataURL('image/png'); INKED = u;
+      x.putImageData(d, 0, 0); const u = c.toDataURL('image/png'); INKED = u; try { localStorage.setItem('copasst_ink', u); } catch (e) { }
       $$('img.ink').forEach(m => { m.dataset.ink = '1'; m.onload = () => m.classList.add('ok'); m.src = u; if (m.complete) m.classList.add('ok'); });
     } catch (e) { fb(); }
   };
-  im.onerror = fb; im.src = img.getAttribute('src');
-  setTimeout(() => { if (!img.classList.contains('ok')) fb(); }, 6000);
+  im.onerror = fb; { const s0 = img.getAttribute('src'); im.src = s0 + (s0.includes('?') ? '&' : '?') + 'ink=1'; }
+  setTimeout(() => { if (!img.classList.contains('ok')) fb(); }, 12000);
 }
 let INKED = null;
 function imgDims(src) { return new Promise(r => { const im = new Image(); im.onload = () => r({ w: im.naturalWidth, h: im.naturalHeight }); im.onerror = () => r(null); im.src = src; }); }
@@ -1530,7 +1531,7 @@ const KV = (() => { let p; const open = () => p || (p = new Promise((ok, ko) => 
 let LIVE = false, snapT = 0;
 const HINT = (() => { try { return JSON.parse(localStorage.getItem('copasst_me') || 'null'); } catch (e) { return null; } })();
 function saveSnap() { if (!ME || !LIVE || !loaded.t || !loaded.u || !loaded.i) return; clearTimeout(snapT); snapT = setTimeout(() => KV.set('snap_' + ME.uid, { T, U, I, PAP, ts: Date.now() }), 1200); }
-function showApp() { paintShell(); $('#login').hidden = true; $('#app').hidden = false; $('#tabbar').hidden = false; }
+function showApp() { paintShell(); requestAnimationFrame(chromeEnter); $('#login').hidden = true; $('#app').hidden = false; $('#tabbar').hidden = false; }
 function fastStart() { if (HINT && HINT.uid) {
   ME = { uid: HINT.uid, email: HINT.email || '', provisional: true }; showApp();
   KV.get('snap_' + HINT.uid).then(sn => { if (!sn || LIVE || !ME || ME.uid !== HINT.uid) return; T = sn.T || {}; U = sn.U || {}; I = sn.I || {}; PAP = sn.PAP || {}; PROF = U[ME.uid] || null;
@@ -1712,6 +1713,21 @@ function go(v, opts) { document.body.classList.remove('dashfit'); if (opts) Obje
 window.addEventListener('hashchange', () => { const v = location.hash.slice(1); if (VIEWS[v] && v !== VIEW) go(v); });
 $$('[data-v]').forEach(b => b.addEventListener('click', () => go(b.dataset.v)));
 
+/* Entrada fluida: los bloques de la vista aparecen en cascada (solo opacidad y desplazamiento, a la tasa de refresco del equipo) */
+let VW_ENTER = 0;
+function viewEnter() {
+  VW_ENTER = 0; if (RM()) return; const v = $('#view'); let L = [...v.children].filter(e => !e.hidden && e.offsetParent !== null);
+  if (L.length < 3 && L[0] && L[0].children.length > 2) L = [...L[0].children, ...L.slice(1)];
+  L.slice(0, 9).forEach((e, i) => e.animate([{ opacity: 0, transform: 'translate3d(0,14px,0)' }, { opacity: 1, transform: 'none' }], { duration: 520, delay: i * 55, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }));
+}
+function chromeEnter() {
+  if (RM() || chromeEnter.done) return; chromeEnter.done = 1; const E = 'cubic-bezier(.22,1,.36,1)';
+  const sd = $('.side'), tb = $('#tabbar'), hd = $('#top'), mh = $('.mhead');
+  if (sd && sd.offsetParent) sd.animate([{ opacity: 0, transform: 'translate3d(-10px,0,0)' }, { opacity: 1, transform: 'none' }], { duration: 480, easing: E, fill: 'backwards' });
+  if (mh && mh.offsetParent) mh.animate([{ opacity: 0, transform: 'translate3d(0,-8px,0)' }, { opacity: 1, transform: 'none' }], { duration: 420, easing: E, fill: 'backwards' });
+  if (hd && !hd.hidden) hd.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, delay: 60, easing: E, fill: 'backwards' });
+  if (tb && !tb.hidden && tb.offsetParent) tb.animate([{ opacity: 0, transform: 'translate3d(0,16px,0)' }, { opacity: 1, transform: 'none' }], { duration: 480, delay: 80, easing: E, fill: 'backwards' });
+}
 function render() {
   if (!loaded.t || !loaded.u || !ME) return;
   const all = tasks(), open = all.filter(isOpen), ov = all.filter(isOver).length;
@@ -1722,8 +1738,9 @@ function render() {
   $$('#nav .nv, #tabbar button').forEach(b => b.dataset.v === VIEW ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current'));
   $('#top').hidden = VIEW === 'resumen';
   $('#vTitle').textContent = VIEWS[VIEW].t; $('#vSub').textContent = VIEWS[VIEW].p;
-  if (built !== VIEW) { built = VIEW; CARDS.clear(); ({ resumen: buildResumen, tareas: buildTareas, inspecciones: buildInsp, mejora: buildMejora, equipo: buildEquipo })[VIEW](); }
+  if (built !== VIEW) { built = VIEW; CARDS.clear(); ({ resumen: buildResumen, tareas: buildTareas, inspecciones: buildInsp, mejora: buildMejora, equipo: buildEquipo })[VIEW](); VW_ENTER = 1; }
   ({ resumen: updResumen, tareas: updTareas, inspecciones: updInsp, mejora: updMejora, equipo: updEquipo })[VIEW]();
+  if (VW_ENTER) viewEnter();
   if ($('#dInsp').open) renderInsp();
   if ($('#dMail').open) drawMailTeam();
 }

@@ -976,11 +976,12 @@ window.addEventListener('pagehide', () => { persist(); flushRemote(); });
 /* ═════ Informe PDF ═════ */
 function inkLogo(img) {
   if (img.dataset.ink) return; img.dataset.ink = '1';
+  try { const c0 = localStorage.getItem('copasst_ink'); if (c0) { img.onload = () => img.classList.add('ok'); img.src = c0; if (img.complete) img.classList.add('ok'); return; } } catch (e) { }
   const fb = () => img.classList.add('fb'), im = new Image(); im.crossOrigin = 'anonymous';
   im.onload = () => { try { const c = document.createElement('canvas'), w = c.width = im.naturalWidth, h = c.height = im.naturalHeight, x = c.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, w, h), q = d.data;
     for (let i = 0; i < q.length; i += 4) { if (q[i + 3] < 6) continue; const mn = Math.min(q[i], q[i + 1], q[i + 2]), mx = Math.max(q[i], q[i + 1], q[i + 2]); if (mn > 196 && mx - mn < 36) { q[i] = 27; q[i + 1] = 53; q[i + 2] = 107; } }
-    x.putImageData(d, 0, 0); img.onload = () => img.classList.add('ok'); img.src = c.toDataURL('image/png'); } catch (e) { fb(); } };
-  im.onerror = fb; im.src = img.getAttribute('src'); setTimeout(() => { if (!img.classList.contains('ok')) fb(); }, 6000);
+    x.putImageData(d, 0, 0); img.onload = () => img.classList.add('ok'); { const u = c.toDataURL('image/png'); try { localStorage.setItem('copasst_ink', u); } catch (e) { } img.src = u; } } catch (e) { fb(); } };
+  im.onerror = fb; { const s0 = img.getAttribute('src'); im.src = s0 + (s0.includes('?') ? '&' : '?') + 'ink=1'; } setTimeout(() => { if (!img.classList.contains('ok')) fb(); }, 12000);
 }
 document.querySelectorAll('img.ink').forEach(inkLogo);
 function imgDims(src) { return new Promise(r => { const im = new Image(); im.onload = () => r({ w: im.naturalWidth, h: im.naturalHeight }); im.onerror = () => r(null); im.src = src; }); }
@@ -1128,6 +1129,12 @@ const NUEVA = new URLSearchParams(location.search).has('nueva');
 if (NUEVA) { try { localStorage.removeItem(LS_KEY); } catch (e) { } }
 else { try { const d0 = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); if (d0 && !new URLSearchParams(location.search).get('id')) S = { ...blank(), ...d0, ev: {} }; } catch (e) { } }
 applyMe(S); writeHead();
+/* Entrada fluida de la lista: encabezado, barra de avance y categorías en cascada */
+function listaEnter() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; const E = 'cubic-bezier(.22,1,.36,1)';
+  const L = [document.querySelector('.toolbar'), document.querySelector('.hero'), document.querySelector('#tape'), document.querySelector('.rail'), ...document.querySelectorAll('#sections .sec')].filter(e => e && e.offsetParent !== null).slice(0, 9);
+  L.forEach((e, i) => e.animate([{ opacity: 0, transform: 'translate3d(0,14px,0)' }, { opacity: 1, transform: 'none' }], { duration: 540, delay: i * 60, easing: E, fill: 'backwards' }));
+}
 (async function init() {
   const id = new URLSearchParams(location.search).get('id');
   let draft = null; try { draft = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) { }
@@ -1138,7 +1145,7 @@ applyMe(S); writeHead();
     if (h) { fromRecord(id, h); persist(); } else need = true;
   } else if (draft) await restoreDraft(draft);
   if (!S.id && !Object.keys(S.r).length) applyMe(S);
-  const paint = () => { writeHead(); renderAll(); initCharts(); updateAll(); };
+  const paint = () => { writeHead(); renderAll(); initCharts(); updateAll(); if (!paint.done) { paint.done = 1; listaEnter(); } };
   if (!need) paint();
   window.BOOTED = true;
   ME = await authReady();
