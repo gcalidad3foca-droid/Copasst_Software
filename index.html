@@ -1112,6 +1112,15 @@ body.dashfit .bi{gap:16px}
 .vw-strip button.on{opacity:1;border-color:#fff}
 .vw-strip img{width:100%;height:100%;object-fit:cover;display:block}.vw-strip span{display:grid;place-items:center;width:100%;height:100%;font-size:10px;font-weight:800;color:#fff}
 @media (max-width:760px){.vw-fill{inset:8px}.vw-nav{display:none}.vw-b span{display:none}.vw-b{width:40px;padding:0;justify-content:center}.vw-top{padding-left:14px;padding-right:10px;gap:8px}.vw-doc{border-radius:8px}.vw-pdf{padding:10px 0 84px;gap:10px}}
+
+/* ── Transición suave entre el panel y la lista (navegación entre páginas) ── */
+@view-transition{navigation:auto}
+::view-transition-group(root){animation-duration:.52s}
+::view-transition-old(root){animation:vt-out .2s cubic-bezier(.4,0,1,1) both}
+::view-transition-new(root){animation:vt-in .42s cubic-bezier(.22,1,.36,1) .1s both}
+@keyframes vt-out{to{opacity:0}}
+@keyframes vt-in{from{opacity:0;transform:translate3d(0,10px,0)}}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
 </style>
 </head>
 <body>
@@ -1571,9 +1580,9 @@ function afterProfile() {
 }
 function renderMe() {
   const p = PROF || {}, n = p.nombre || (ME && ME.email) || '';
-  $('#meCard').innerHTML = `<button class="me-b" id="meEd" title="Mi perfil">${av(n, 38, p)}<div><b>${esc(p.nombre || 'Sin perfil')}</b><small>${esc(p.cargo || (ME && ME.email) || '')}</small></div></button><button class="iconbtn" id="meOut" aria-label="Cerrar sesión" title="Cerrar sesión">${ico('logout')}</button>`;
+  setH($('#meCard'), `<button class="me-b" id="meEd" title="Mi perfil">${av(n, 38, p)}<div><b>${esc(p.nombre || 'Sin perfil')}</b><small>${esc(p.cargo || (ME && ME.email) || '')}</small></div></button><button class="iconbtn" id="meOut" aria-label="Cerrar sesión" title="Cerrar sesión">${ico('logout')}</button>`);
   $('#meEd').onclick = () => openProfile(false); $('#meOut').onclick = logout;
-  $('#mobMe').innerHTML = av(n, 30, p) + `<span>${esc((p.nombre || n).split(' ')[0])}</span>`; $('#mobMe').onclick = () => openProfile(false); $('#mobOut').onclick = logout;
+  setH($('#mobMe'), av(n, 30, p) + `<span>${esc((p.nombre || n).split(' ')[0])}</span>`); $('#mobMe').onclick = () => openProfile(false); $('#mobOut').onclick = logout;
 }
 async function logout() { if (await confirmDlg('Se cerrará la sesión en este equipo.', 'Cerrar sesión', 'Cerrar sesión')) { $$('dialog[open]').forEach(d => { d.dataset.lock = ''; d.close(); }); auth.signOut(); } }
 const users = () => Object.entries(U).filter(([, u]) => u.nombre).map(([uid, u]) => ({ uid, ...u })).sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
@@ -1718,10 +1727,11 @@ let VW_ENTER = 0;
 function viewEnter() {
   VW_ENTER = 0; if (RM()) return; const v = $('#view'); let L = [...v.children].filter(e => !e.hidden && e.offsetParent !== null);
   if (L.length < 3 && L[0] && L[0].children.length > 2) L = [...L[0].children, ...L.slice(1)];
-  L.slice(0, 9).forEach((e, i) => e.animate([{ opacity: 0, transform: 'translate3d(0,14px,0)' }, { opacity: 1, transform: 'none' }], { duration: 520, delay: i * 55, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }));
+  L.filter(e => getComputedStyle(e).animationName === 'none').slice(0, 9).forEach((e, i) => e.animate([{ opacity: 0, transform: 'translate3d(0,14px,0)' }, { opacity: 1, transform: 'none' }], { duration: 520, delay: i * 55, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }));
 }
+addEventListener('pagereveal', e => { if (e.viewTransition) window.__VT = 1; });
 function chromeEnter() {
-  if (RM() || chromeEnter.done) return; chromeEnter.done = 1; const E = 'cubic-bezier(.22,1,.36,1)';
+  if (RM() || chromeEnter.done || window.__VT) return; chromeEnter.done = 1; const E = 'cubic-bezier(.22,1,.36,1)';
   const sd = $('.side'), tb = $('#tabbar'), hd = $('#top'), mh = $('.mhead');
   if (sd && sd.offsetParent) sd.animate([{ opacity: 0, transform: 'translate3d(-10px,0,0)' }, { opacity: 1, transform: 'none' }], { duration: 480, easing: E, fill: 'backwards' });
   if (mh && mh.offsetParent) mh.animate([{ opacity: 0, transform: 'translate3d(0,-8px,0)' }, { opacity: 1, transform: 'none' }], { duration: 420, easing: E, fill: 'backwards' });
@@ -2437,15 +2447,15 @@ function drawReg(base0) {
   const team = RV === 'team';
   $('#rgSt').hidden = team; $('#rgF').hidden = team; $('#rgList').hidden = team;
   if (team) {
-    $('#rgMem').innerHTML = mem.length ? `<div class="mgi">${mem.map((m, i) => { const d = m.L.filter(x => !isCurso(x)), c = m.L.filter(isCurso), av0 = d.length ? Math.round(d.reduce((a, x) => a + (x.pct || 0), 0) / d.length) : null, last = [...m.L].sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''))[0];
-      return `<button class="mgc" data-u="${esc(m.u.uid)}" style="--d:${Math.min(i, 10) * 45}ms"><span class="mgh">${av(m.u.nombre, 46, m.u)}<span class="mgn"><b>${esc(m.u.nombre)}</b><small>${esc(m.u.cargo || 'Subcomité de Inspecciones')}</small></span>${av0 == null ? '' : `<span class="ring sm" style="--p:${av0};--rc:${pctColor(av0)}"><b>${av0}%</b></span>`}</span>
+    morphInto($('#rgMem'), mem.length ? `<div class="mgi" data-k="mgi">${mem.map((m, i) => { const d = m.L.filter(x => !isCurso(x)), c = m.L.filter(isCurso), av0 = d.length ? Math.round(d.reduce((a, x) => a + (x.pct || 0), 0) / d.length) : null, last = [...m.L].sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''))[0];
+      return `<button class="mgc" data-k="${esc(m.u.uid)}" data-u="${esc(m.u.uid)}" style="--d:${Math.min(i, 10) * 45}ms"><span class="mgh">${av(m.u.nombre, 46, m.u)}<span class="mgn"><b>${esc(m.u.nombre)}</b><small>${esc(m.u.cargo || 'Subcomité de Inspecciones')}</small></span>${av0 == null ? '' : `<span class="ring sm" style="--p:${av0};--rc:${pctColor(av0)}"><b>${av0}%</b></span>`}</span>
         <span class="mgs"><span><b>${d.length}</b>Realizadas</span><span class="${c.length ? 'cu' : ''}"><b>${c.length}</b>En curso</span><span><b>${new Set(m.L.map(x => x.sede).filter(Boolean)).size}</b>Sedes</span></span>
         <span class="mgl">${last ? `${ico('clock')}Última: ${esc(last.sede || 'Sede sin asignar')} · ${fd(last.fecha)}` : `${ico('clock')}Aún sin inspecciones`}</span></button>`; }).join('')}</div>`
-      : `<div class="card"><div class="empty" style="padding:40px 16px"><b>Sin integrantes</b>Los miembros del Subcomité de Inspecciones aparecerán aquí.</div></div>`;
+      : `<div class="card" data-k="mge"><div class="empty" style="padding:40px 16px"><b>Sin integrantes</b>Los miembros del Subcomité de Inspecciones aparecerán aquí.</div></div>`);
     $$('#rgMem .mgc').forEach(b => b.onclick = () => { RV = 'member'; RVU = b.dataset.u; drawReg(filtI()); window.scrollTo({ top: 0, behavior: 'smooth' }); });
     return;
   }
-  $('#rgMem').innerHTML = RV === 'member' ? `<div class="mhd">${av(sel.u.nombre, 40, sel.u)}<div><b>${esc(sel.u.nombre)}</b><small>Inspecciones de este integrante</small></div><button class="btn sm" id="rgBack">${ico('users')}Integrantes</button></div>` : '';
+  morphInto($('#rgMem'), RV === 'member' ? `<div class="mhd" data-k="mhd-${esc(sel.u.uid)}">${av(sel.u.nombre, 40, sel.u)}<div><b>${esc(sel.u.nombre)}</b><small>Inspecciones de este integrante</small></div><button class="btn sm" id="rgBack">${ico('users')}Integrantes</button></div>` : '');
   if ($('#rgBack')) $('#rgBack').onclick = () => { RV = 'team'; RVU = null; drawReg(filtI()); };
   const base = RV === 'mine' ? mine : RV === 'member' ? sel.L : base0;
   const done = base.filter(x => !isCurso(x)), cur = base.filter(isCurso), L = (FI.est === 'curso' ? cur : FI.est === 'comp' ? done : base).slice().sort((a, b) => isCurso(b) - isCurso(a));
