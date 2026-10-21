@@ -6,7 +6,11 @@
 <meta name="theme-color" content="#F3F5FA">
 <title>COPASST Software</title>
 <link rel="icon" type="image/png" href="https://i.imgur.com/F27EdWc.png">
-<link rel="apple-touch-icon" href="https://i.imgur.com/F27EdWc.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="COPASST">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -3201,6 +3205,7 @@ function updEquipo() {
   const p = new URLSearchParams(location.search), t = p.get('tarea'), i = p.get('insp'); if (!t && !i) return;
   const w = setInterval(() => { if (loaded.t && loaded.i && loaded.u) { clearInterval(w); if (t) openTask(t); if (i) { go('inspecciones'); openInsp(i); } } }, 250);
 })();
+if ('serviceWorker' in navigator && location.protocol === 'https:') addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 </script>
 </body>
 </html>
