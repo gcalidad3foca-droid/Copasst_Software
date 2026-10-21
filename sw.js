@@ -1,11 +1,27 @@
-/* COPASST Software — service worker: red primero (siempre la versión más reciente), copia local si no hay conexión */
-const C = 'copasst-v3';
+/* COPASST Software — service worker
+   · Páginas: se pide la versión nueva; si la red tarda, se muestra al instante la copia guardada y se actualiza por detrás.
+   · Librerías y fuentes (URLs con versión fija): se sirven desde el equipo, sin volver a descargarlas. */
+const C = 'copasst-v4', LIB = 'copasst-lib-v1';
 const SHELL = ['./', './index.html', './Lista_Inspeccion_Condiciones_Seguras.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const LIBS = /^https:\/\/(www\.gstatic\.com\/firebasejs\/|cdnjs\.cloudflare\.com\/ajax\/libs\/|cdn\.jsdelivr\.net\/npm\/|fonts\.googleapis\.com\/|fonts\.gstatic\.com\/|i\.imgur\.com\/)/;
 self.addEventListener('install', e => { e.waitUntil(caches.open(C).then(c => c.addAll(SHELL)).catch(() => {})); self.skipWaiting(); });
-self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== C).map(x => caches.delete(x)))).then(() => self.clients.claim())); });
+self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== C && x !== LIB).map(x => caches.delete(x)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
-  const r = e.request, u = new URL(r.url);
-  if (r.method !== 'GET' || u.origin !== location.origin) return;
-  e.respondWith(fetch(r).then(res => { if (res.ok) { const cp = res.clone(); caches.open(C).then(c => c.put(r, cp)); } return res; })
-    .catch(() => caches.match(r, { ignoreSearch: r.mode === 'navigate' }).then(m => m || caches.match('./index.html'))));
+  const r = e.request; if (r.method !== 'GET') return;
+  const u = new URL(r.url);
+  if (LIBS.test(r.url)) {
+    e.respondWith(caches.open(LIB).then(c => c.match(r).then(m => m || fetch(r).then(res => { if (res.ok || res.type === 'opaque') c.put(r, res.clone()); return res; }))));
+    return;
+  }
+  if (u.origin !== location.origin) return;
+  const net = fetch(r).then(res => { if (res.ok) { const cp = res.clone(); caches.open(C).then(c => c.put(r, cp)); } return res; });
+  if (r.mode === 'navigate') {
+    e.respondWith(caches.match(r, { ignoreSearch: true }).then(m => {
+      if (!m) return net.catch(() => caches.match('./index.html'));
+      return Promise.race([net.catch(() => m), new Promise(ok => setTimeout(() => ok(m), 1200))]);
+    }));
+    e.waitUntil(net.catch(() => {}));
+    return;
+  }
+  e.respondWith(net.catch(() => caches.match(r)));
 });

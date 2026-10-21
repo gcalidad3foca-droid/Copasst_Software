@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Inspección de condiciones seguras · COPASST</title>
 <link rel="icon" type="image/png" href="https://i.imgur.com/F27EdWc.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com"><link rel="preconnect" href="https://coppast-sofware-default-rtdb.firebaseio.com" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer onload="window.chartReady&&chartReady()"></script>
 <style>
 :root{
   --bg:#F3F5FA;--card:#fff;--ink:#0E1A33;--ink-2:#38455F;--muted:#68758E;--line:#E4E9F2;--line-2:#EDF0F6;--wash:#F7F9FC;
@@ -868,8 +868,9 @@ function updateAll() {
   if (chDist) { chDist.data.datasets[0].data = [r.si, r.no, r.na]; chDist.update(); }
   return r;
 }
+window.chartReady = () => { if (window.BOOTED) { initCharts(); updateAll(); } };
 function initCharts() {
-  if (!window.Chart) return;
+  if (!window.Chart || chCat) return;
   Chart.defaults.font.family = "'Plus Jakarta Sans', system-ui, sans-serif"; Chart.defaults.color = '#68758E';
   chCat = new Chart($('#chCat'), { type: 'bar', data: { labels: CATEGORIAS.map(c => c.nombre), datasets: [{ data: [], backgroundColor: [], borderRadius: 6, barThickness: 28 }] },
     options: { maintainAspectRatio: false, animation: { duration: 300 }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y + '%' } } },
@@ -879,7 +880,7 @@ function initCharts() {
 }
 
 /* ═════ Encabezado ═════ */
-function fillSedes() { $('#sede').innerHTML = '<option value="">Seleccione la sede</option>' + (SEDES[S.empresa] || []).map(n => `<option>${esc(n)}</option>`).join(''); }
+function fillSedes() { const L = SEDES[S.empresa] || []; $('#sede').innerHTML = '<option value="">Seleccione la sede</option>' + (S.sede && !L.includes(S.sede) ? [S.sede, ...L] : L).map(n => `<option>${esc(n)}</option>`).join(''); }
 function drawEmp() { const bs = $$('#empresa .emp'); if (bs.length) { bs.forEach(b => { const on = b.dataset.e === S.empresa; b.setAttribute('aria-pressed', on); b.setAttribute('aria-checked', on); }); return; } $('#empresa').innerHTML = Object.keys(SEDES).map(k => `<button type="button" class="emp" role="radio" data-e="${k}" aria-checked="${S.empresa === k}" aria-pressed="${S.empresa === k}" title="${esc(EMPRESA_NOMBRE[k])}"><img src="${LOGOS[k]}" alt="${k}"></button>`).join(''); }
 $('#area').innerHTML += AREAS.map(a => `<option>${a}</option>`).join('');
 function writeHead() { $('#fecha').value = S.fecha; drawEmp(); fillSedes(); if (S.sede) $('#sede').value = S.sede; $('#area').value = S.area || ''; $('#inspector').value = S.inspector; sigState();
@@ -915,6 +916,9 @@ async function loadInspectors() {
 async function fetchDataUrl(url) { if (!url) return null; if (url.startsWith('data:')) return url; try { const r = await fetch(url, { mode: 'cors' }); if (!r.ok) throw 0; const b = await r.blob(); return await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = () => res(null); fr.readAsDataURL(b); }); } catch (e) { return urlToDataUrl(url); } }
 async function loadRemote(id) {
   const s = await db.ref(ROOT + '/inspecciones/' + id).once('value'); const x = s.val(); if (!x) return false;
+  return fromRecord(id, x);
+}
+function fromRecord(id, x) {
   S = { ...blank(), id, estado: x.estado === 'curso' ? 'curso' : 'comp', updatedAt: x.updatedAt || 0, createdAt: x.createdAt || null, fecha: x.fecha, empresa: x.empresa, sede: x.sede, area: x.area || '', inspector: x.inspector || '', inspectorUid: x.inspectorUid || null };
   Object.entries(x.items || {}).forEach(([k, it]) => { if (!KM[k]) return; if (it.resp) S.r[k] = it.resp; if (it.obs) S.obs[k] = it.obs; if (it.om) S.om[k] = it.om;
     if (it.fotos && it.fotos.length) S.ev[k] = it.fotos.map(f => ({ id: uid(), url: f.url, dataUrl: null, title: f.title || '', st: 'ok' })); });
@@ -992,6 +996,7 @@ async function generarInforme() {
   if (!validHead()) return;
   const r = compute(); if (!r.si && !r.no && !r.na) return toast('Responda al menos un ítem para generar el informe', true);
   loader(true, 'Generando informe…', 'Preparando hallazgos y fotos'); await new Promise(x => setTimeout(x, 60));
+  for (let w = 0; w < 100 && !(window.jspdf && window.jspdf.jsPDF && window.jspdf.jsPDF.API.autoTable); w++) await new Promise(x => setTimeout(x, 100));
   try {
     const { jsPDF } = window.jspdf, doc = new jsPDF('p', 'mm', 'a4');
     const PW = doc.internal.pageSize.getWidth(), PH = doc.internal.pageSize.getHeight(), M = 15, CW = PW - M * 2;
@@ -1124,25 +1129,35 @@ if (NUEVA) { try { localStorage.removeItem(LS_KEY); } catch (e) { } }
 else { try { const d0 = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); if (d0 && !new URLSearchParams(location.search).get('id')) S = { ...blank(), ...d0, ev: {} }; } catch (e) { } }
 applyMe(S); writeHead();
 (async function init() {
-  ME = await authReady();
-  if (auth && !ME) { location.replace('index.html?next=' + encodeURIComponent(location.pathname.split('/').pop() + location.search)); return; }
   const id = new URLSearchParams(location.search).get('id');
   let draft = null; try { draft = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) { }
-  if (NUEVA) { draft = null; try { await IDB.clear(); } catch (e) { } S = blank(); history.replaceState(null, '', location.pathname); }
-  if (id && draft && draft.id === id && db) {
-    // Mismo registro en este equipo: se usa la versión más reciente (este equipo o el panel)
-    try { const s0 = await db.ref(ROOT + '/inspecciones/' + id + '/updatedAt').once('value'); if ((s0.val() || 0) > (draft.updatedAt || 0) + 1500) draft = null; } catch (e) { }
-  }
-  if (id && (!draft || draft.id !== id)) {
-    loader(true, 'Cargando inspección…', 'Un momento');
-    let ok = false; try { ok = db && await loadRemote(id); } catch (e) { }
-    loader(false); if (!ok) { toast('No se encontró la inspección solicitada', true); history.replaceState(null, '', location.pathname); if (draft) await restoreDraft(draft); }
-    else persist();
+  if (NUEVA) { draft = null; IDB.clear().catch(() => { }); S = blank(); history.replaceState(null, '', location.pathname); }
+  let need = false;
+  if (id && !(draft && draft.id === id)) {
+    let h = null; try { h = JSON.parse(sessionStorage.getItem('copasst_h_' + id) || 'null'); sessionStorage.removeItem('copasst_h_' + id); } catch (e) { }
+    if (h) { fromRecord(id, h); persist(); } else need = true;
   } else if (draft) await restoreDraft(draft);
   if (!S.id && !Object.keys(S.r).length) applyMe(S);
-  writeHead(); renderAll(); initCharts(); updateAll(); if (db) loadInspectors().then(() => { if (!S.id && S.estado !== 'comp') remoteSave(false); });
+  const paint = () => { writeHead(); renderAll(); initCharts(); updateAll(); };
+  if (!need) paint();
+  window.BOOTED = true;
+  ME = await authReady();
+  if (auth && !ME) { location.replace('index.html?next=' + encodeURIComponent(location.pathname.split('/').pop() + location.search)); return; }
+  if (need) {
+    const lt = setTimeout(() => loader(true, 'Cargando inspección…', 'Un momento'), 700);
+    let ok = false; try { ok = db && await loadRemote(id); } catch (e) { }
+    clearTimeout(lt); loader(false);
+    if (!ok) { toast('No se encontró la inspección solicitada', true); history.replaceState(null, '', location.pathname); if (draft) await restoreDraft(draft); } else persist();
+    if (!S.id && !Object.keys(S.r).length) applyMe(S);
+    paint();
+  } else if (id && draft && draft.id === id && db) {
+    // Mismo registro en este equipo: si el panel tiene una versión más reciente, se actualiza en silencio
+    try { const s0 = await db.ref(ROOT + '/inspecciones/' + id + '/updatedAt').once('value'); if ((s0.val() || 0) > (draft.updatedAt || 0) + 1500 && await loadRemote(id)) { persist(); paint(); } } catch (e) { }
+  }
+  if (db) loadInspectors().then(() => { if (!S.id && S.estado !== 'comp') remoteSave(false); });
   Object.entries(S.ev).forEach(([k, a]) => a.forEach(p => { if (p.st === 'local' && p.dataUrl) uploadPhoto(k, p); }));
 })();
+if ('serviceWorker' in navigator && location.protocol === 'https:') addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 </script>
 </body>
 </html>
