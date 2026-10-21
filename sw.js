@@ -1,5 +1,5 @@
 /* COPASST Software — service worker: red primero (siempre la versión más reciente), copia local si no hay conexión */
-const C = 'copasst-v1';
+const C = 'copasst-v3';
 const SHELL = ['./', './index.html', './Lista_Inspeccion_Condiciones_Seguras.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(C).then(c => c.addAll(SHELL)).catch(() => {})); self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== C).map(x => caches.delete(x)))).then(() => self.clients.claim())); });
