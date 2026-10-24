@@ -2680,11 +2680,17 @@ $('#tkSave').onclick = async () => {
     else { const r = ref('tareas').push(); key = r.key; await r.set({ ...d, estado: 'pend', tipo: tkData.tipo || null, ctx: tkData.ctx || null, origen: tkData.origen || null, createdAt: now, updatedAt: now, createdBy: ME.uid }); full = { id: key, ...d, estado: 'pend', tipo: tkData.tipo || null }; }
     $('#dTask').close();
     const nuevos = us.filter(u => !tkData.was.has(u.uid));
+    const verb = tkId ? 'Tarea actualizada' : 'Tarea creada';
     if ($('#tkMail').checked && mailOK() && nuevos.length) {
-      const r = await mailTask(full, tkId ? 'asignacion' : 'asignacion', nuevos);
-      if (r.ok) { ref('tareas/' + key).update({ avisadoAt: Date.now() }); toast(`${tkId ? 'Tarea actualizada' : 'Tarea creada'} · aviso enviado a ${nuevos.filter(u => u.email).length} persona${nuevos.filter(u => u.email).length === 1 ? '' : 's'}`); }
-      else toast(`${tkId ? 'Tarea actualizada' : 'Tarea creada'}, pero el correo no salió: ${MAIL_MSG[r.reason] || r.error || 'error'}`, true);
-    } else toast(tkId ? 'Tarea actualizada' : 'Tarea creada y asignada');
+      const con = nuevos.filter(u => u.email), sin = nuevos.filter(u => !u.email).map(u => u.nombre.split(' ')[0]);
+      const r = await mailTask(full, 'asignacion', nuevos);
+      if (r.ok && (r.enviados == null || r.enviados > 0 || r.unverified)) {
+        ref('tareas/' + key).update({ avisadoAt: Date.now() });
+        const n = r.enviados != null ? r.enviados : con.length;
+        toast(`${verb} · aviso enviado a ${n} persona${n === 1 ? '' : 's'}${r.fallos && r.fallos.length ? ' (' + r.fallos.length + ' con error)' : ''}${sin.length ? ' · sin correo registrado: ' + sin.join(', ') : ''}${r.unverified ? ' · sin confirmación del servicio, revise la bandeja' : ''}`, !!(sin.length || (r.fallos && r.fallos.length)));
+      } else toast(`${verb}, pero el correo no salió: ${MAIL_MSG[r.reason] || r.error || 'error'}${sin.length ? ' · sin correo registrado: ' + sin.join(', ') : ''}`, true);
+    } else if (nuevos.length && !mailOK()) toast(`${verb}, pero no se avisó por correo: ${MAIL_MSG.config}`, true);
+    else toast(tkId ? 'Tarea actualizada' : 'Tarea creada y asignada');
   } catch (e) { toast('No se pudo guardar: ' + e.message, true); }
   b.disabled = false;
 };
