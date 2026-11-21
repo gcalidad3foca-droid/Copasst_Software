@@ -3778,7 +3778,7 @@ async function mejPptx(D) {
     /* Cierres: antes / después */
     if (MREP.det || MREP.fotos) for (let i = 0; i < Math.min(D.comp.length, 30); i++) {
       const r = D.comp[i]; loader(true, 'Generando presentación…', `Gestión ${i + 1} de ${D.comp.length}`, 40 + Math.round(i / D.comp.length * 55));
-      s = K.slide(short(r.titulo, 70), `${EMP_N[r.emp] || r.emp}  ·  ${r.sede || 'Sede sin asignar'}${r.area ? '  ·  ' + r.area : ''}  ·  Cerrada ${fts(r.cerr)}${r.dias != null ? `  ·  ${r.dias} días` : ''}`);
+      s = K.slide(short(`${r.sede || 'Sede sin asignar'}${r.area ? ' · ' + r.area : ''}`, 60), `${EMP_N[r.emp] || r.emp}  ·  ${r.kind === 'om' ? 'Oportunidad de mejora' : 'Hallazgo no conforme'} cerrado  ·  Cerrada ${fts(r.cerr)}${r.dias != null ? `  ·  ${r.dias} días` : ''}`);
       const ev = r.ev.find(e => e.tipo === 'img'), a = MREP.fotos && r.fotos[0] ? await toDataURL(r.fotos[0], 'c_limit,w_1000,q_72,a_auto') : null, b = MREP.fotos && ev ? await toDataURL(ev.url, 'c_limit,w_1000,q_72,a_auto') : null, ph = a || b, tw = ph ? 4.6 : 12.13, iw = tw - .6;
       K.card(s, .6, 1.55, tw, 5.3, WASH);
       const lab = (t, x, y, w, col) => T(s, t, { x, y, w, h: .25, fontSize: 10.5, bold: true, color: col || MUT, charSpacing: 1 }), hw = iw / 2 - .1;
