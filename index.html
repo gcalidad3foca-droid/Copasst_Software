@@ -3576,10 +3576,10 @@ function drawMjPane() {
 const MF = { emp: 'all', year: today().slice(0, 4), mes: '' };
 function mejRows() {
   const out = [];
-  mejoraPend().forEach(z => out.push({ st: 'porg', kind: z.kind, titulo: z.kind === 'om' ? z.it.om : z.it.pregunta, item: z.it.pregunta || '', obs: z.it.obs || '', cat: z.it.catNombre || '', emp: z.x.empresa, sede: z.x.sede, area: z.x.area || '', f: z.x.fecha || '', fotos: (z.it.fotos || []).map(f => f.url), resp: '', iid: z.x.id, ev: [] }));
+  mejoraPend().forEach(z => out.push({ st: 'porg', kind: z.kind, titulo: z.kind === 'om' ? z.it.om : z.it.pregunta, item: z.it.pregunta || '', obs: z.it.obs || '', cat: z.it.catNombre || '', om: z.it.om || '', emp: z.x.empresa, sede: z.x.sede, area: z.x.area || '', f: z.x.fecha || '', fotos: (z.it.fotos || []).map(f => f.url), resp: '', iid: z.x.id, ev: [] }));
   tasks().filter(t => t.tipo === 'oportunidad').forEach(t => {
     const x = t.origen && I[t.origen.id], c = t.ctx || {};
-    out.push({ st: t.estado, kind: c.tipo || 'nc', titulo: t.titulo, item: c.item || '', obs: c.obs || '', cat: c.cat || 'Sin categoría', emp: c.empresa || (x && x.empresa) || '', sede: c.sede || (x && x.sede) || '', area: c.area || (x && x.area) || '', f: (x && x.fecha) || isoOf(t.createdAt || Date.now()), fotos: c.fotos || [], resp: respLabel(t), t, over: isOver(t), lim: t.fechaLimite || '', cerr: t.completedAt || null, dias: t.completedAt && t.createdAt ? Math.max(0, Math.round((t.completedAt - t.createdAt) / 864e5)) : null, ev: Object.values(t.evidencias || {}), cierre: htmlText(t.cierre) });
+    out.push({ st: t.estado, kind: c.tipo || 'nc', titulo: t.titulo, item: c.item || '', obs: c.obs || '', om: c.om || '', cat: c.cat || 'Sin categoría', emp: c.empresa || (x && x.empresa) || '', sede: c.sede || (x && x.sede) || '', area: c.area || (x && x.area) || '', f: (x && x.fecha) || isoOf(t.createdAt || Date.now()), fotos: c.fotos || [], resp: respLabel(t), t, over: isOver(t), lim: t.fechaLimite || '', cerr: t.completedAt || null, dias: t.completedAt && t.createdAt ? Math.max(0, Math.round((t.completedAt - t.createdAt) / 864e5)) : null, ev: Object.values(t.evidencias || {}), cierre: htmlText(t.cierre) });
   });
   return out;
 }
@@ -3766,20 +3766,30 @@ async function mejPptx(D) {
     const cats = [...new Set(D.R.map(r => r.cat))].sort((a, b) => D.R.filter(r => r.cat === b).length - D.R.filter(r => r.cat === a).length).slice(0, 8).reverse();
     K.card(s, 6.55, 1.55, 6.18, 5.3); s.addChart(p.ChartType.bar, grp.map(([k, n]) => ({ name: n, labels: cats, values: cats.map(c2 => cnt(D.R.filter(r => r.cat === c2), k)) })), { x: 6.7, y: 1.7, w: 5.9, h: 5.0, barDir: 'bar', barGrouping: 'stacked', chartColors: ['8B6BE0', '3563E9', '14915B'], ...ax, catAxisLabelFontSize: 10 });
     /* Tabla */
-    const hdr = ['Detección', 'Tipo', 'Descripción', 'Empresa · Sede', 'Responsable', 'Estado'].map(t => ({ text: t, options: { bold: true, color: MUT, fontSize: 11, fill: { color: 'FFFFFF' }, border: [{ type: 'none' }, { type: 'none' }, { type: 'solid', pt: 1.5, color: INK }, { type: 'none' }] } }));
+    const hdr = ['Detección', 'Tipo', 'Lo que se vio', 'Sede · Área', 'Responsable', 'Estado'].map(t => ({ text: t, options: { bold: true, color: MUT, fontSize: 11, fill: { color: 'FFFFFF' }, border: [{ type: 'none' }, { type: 'none' }, { type: 'solid', pt: 1.5, color: INK }, { type: 'none' }] } }));
     const ord = { porg: 0, pend: 1, curso: 2, comp: 3 }, RR = [...D.R].sort((a, b) => ord[a.st] - ord[b.st] || (a.f || '').localeCompare(b.f || ''));
-    for (let i = 0; i < RR.length; i += 8) { s = K.slide('Hallazgos y oportunidades de mejora', `${i + 1}–${Math.min(RR.length, i + 8)} de ${RR.length}`);
-      s.addTable([hdr, ...RR.slice(i, i + 8).map(r => [fd(r.f), { text: r.kind === 'om' ? 'Mejora' : 'No cumple', options: { bold: true, color: r.kind === 'om' ? '6B48C8' : 'D8443A' } }, short(r.titulo, 90), `${r.emp} · ${r.sede}`, short(r.resp || '—', 40), { text: MST[r.st][0] + (r.over ? ' · vencida' : ''), options: { bold: true, color: r.over ? 'D8443A' : MST[r.st][1].slice(1) } }])],
-        { x: .6, y: 1.6, w: 12.13, colW: [1.2, 1.15, 4.4, 2.3, 1.85, 1.23], fontSize: 11.5, fontFace: F, color: INK, border: { type: 'none' }, valign: 'middle', rowH: .6, margin: [0, .08, 0, .08] }); }
+    const seenOf = r => r.kind === 'om' ? (r.obs || r.om || r.titulo || r.item) : (r.obs || r.item || r.titulo);
+    for (let i = 0; i < RR.length; i += 7) { s = K.slide('Hallazgos y oportunidades de mejora', `${i + 1}–${Math.min(RR.length, i + 7)} de ${RR.length}`);
+      s.addTable([hdr, ...RR.slice(i, i + 7).map(r => [fd(r.f), { text: r.kind === 'om' ? 'Mejora' : 'No cumple', options: { bold: true, color: r.kind === 'om' ? '6B48C8' : 'D8443A' } },
+        { text: [{ text: short(seenOf(r), 150), options: { color: INK, breakLine: !!(r.item && r.item !== seenOf(r)) } }, ...(r.item && r.item !== seenOf(r) ? [{ text: 'Ítem: ' + short(r.item, 70), options: { color: MUT, fontSize: 10 } }] : [])] },
+        { text: [{ text: `${r.emp} · ${r.sede || 'Sede sin asignar'}`, options: { bold: true, color: INK, breakLine: true } }, { text: r.area ? 'Área: ' + r.area : 'Área sin registrar', options: { color: MUT, fontSize: 10.5 } }] },
+        short(r.resp || '—', 40), { text: MST[r.st][0] + (r.over ? ' · vencida' : ''), options: { bold: true, color: r.over ? 'D8443A' : MST[r.st][1].slice(1) } }])],
+        { x: .6, y: 1.6, w: 12.13, colW: [1.05, 1.0, 4.6, 2.65, 1.6, 1.23], fontSize: 11.5, fontFace: F, color: INK, border: { type: 'none' }, valign: 'middle', rowH: .7, margin: [0, .08, 0, .08] }); }
     /* Cierres: antes / después */
     if (MREP.det || MREP.fotos) for (let i = 0; i < Math.min(D.comp.length, 30); i++) {
       const r = D.comp[i]; loader(true, 'Generando presentación…', `Gestión ${i + 1} de ${D.comp.length}`, 40 + Math.round(i / D.comp.length * 55));
-      s = K.slide(short(r.titulo, 70), `${EMP_N[r.emp] || r.emp}  ·  ${r.sede}  ·  Cerrada ${fts(r.cerr)}${r.dias != null ? `  ·  ${r.dias} días` : ''}`);
-      const ev = r.ev.find(e => e.tipo === 'img'), a = MREP.fotos && r.fotos[0] ? await toDataURL(r.fotos[0], 'c_limit,w_1000,q_72,a_auto') : null, b = MREP.fotos && ev ? await toDataURL(ev.url, 'c_limit,w_1000,q_72,a_auto') : null, ph = a || b, tw = ph ? 3.9 : 12.13;
+      s = K.slide(short(r.titulo, 70), `${EMP_N[r.emp] || r.emp}  ·  ${r.sede || 'Sede sin asignar'}${r.area ? '  ·  ' + r.area : ''}  ·  Cerrada ${fts(r.cerr)}${r.dias != null ? `  ·  ${r.dias} días` : ''}`);
+      const ev = r.ev.find(e => e.tipo === 'img'), a = MREP.fotos && r.fotos[0] ? await toDataURL(r.fotos[0], 'c_limit,w_1000,q_72,a_auto') : null, b = MREP.fotos && ev ? await toDataURL(ev.url, 'c_limit,w_1000,q_72,a_auto') : null, ph = a || b, tw = ph ? 4.6 : 12.13, iw = tw - .6;
       K.card(s, .6, 1.55, tw, 5.3, WASH);
-      T(s, 'RESPONSABLE', { x: .9, y: 1.85, w: tw - .6, h: .25, fontSize: 10.5, bold: true, color: MUT, charSpacing: 1 }); T(s, r.resp || '—', { x: .9, y: 2.15, w: tw - .6, h: .4, fontSize: 16, bold: true, color: INK, fit: 'shrink' });
-      T(s, 'GESTIÓN REALIZADA', { x: .9, y: 2.85, w: tw - .6, h: .25, fontSize: 10.5, bold: true, color: '14915B', charSpacing: 1 }); T(s, short(r.cierre || 'Sin descripción del cierre.', 600), { x: .9, y: 3.15, w: tw - .6, h: 3.4, fontSize: 13.5, color: '38455F', fit: 'shrink' });
-      if (ph) { const gx = 4.75, cw = 3.9;
+      const lab = (t, x, y, w, col) => T(s, t, { x, y, w, h: .25, fontSize: 10.5, bold: true, color: col || MUT, charSpacing: 1 }), hw = iw / 2 - .1;
+      lab('SEDE', .9, 1.8, hw); T(s, `${r.emp} · ${r.sede || 'Sin asignar'}`, { x: .9, y: 2.07, w: hw, h: .55, fontSize: 13.5, bold: true, color: INK, fit: 'shrink' });
+      lab('ÁREA', .9 + hw + .2, 1.8, hw); T(s, r.area || 'Sin registrar', { x: .9 + hw + .2, y: 2.07, w: hw, h: .55, fontSize: 13.5, bold: true, color: INK, fit: 'shrink' });
+      const seen = r.kind === 'om' ? (r.obs || r.om || r.titulo) : (r.obs || r.item || r.titulo), extra = [r.kind === 'om' && r.om && r.om !== seen ? 'Oportunidad de mejora: ' + r.om : '', r.item && r.item !== seen ? 'Ítem revisado: ' + r.item : '', r.cat ? 'Categoría: ' + r.cat : ''].filter(Boolean);
+      lab(r.kind === 'om' ? 'LO QUE SE VIO · OPORTUNIDAD' : 'LO QUE SE VIO · HALLAZGO', .9, 2.8, iw, r.kind === 'om' ? '6B48C8' : 'D8443A');
+      T(s, [{ text: short(seen, 260), options: { bold: true, color: INK, breakLine: !!extra.length } }, ...extra.map((t, i) => ({ text: short(t, 140), options: { color: MUT, fontSize: 11, breakLine: i < extra.length - 1 } }))], { x: .9, y: 3.08, w: iw, h: 1.3, fontSize: 12.5, fit: 'shrink' });
+      lab('RESPONSABLE', .9, 4.5, iw); T(s, r.resp || '—', { x: .9, y: 4.77, w: iw, h: .35, fontSize: 14, bold: true, color: INK, fit: 'shrink' });
+      lab('GESTIÓN REALIZADA', .9, 5.25, iw, '14915B'); T(s, short(r.cierre || 'Sin descripción del cierre.', 450), { x: .9, y: 5.52, w: iw, h: 1.25, fontSize: 12, color: '38455F', fit: 'shrink' });
+      if (ph) { const gx = 5.4, cw = 3.55;
         for (const [j, d, l, cc] of [[0, a, 'ANTES · hallazgo', 'D8443A'], [1, b, 'DESPUÉS · evidencia', '14915B']]) { const bx = gx + j * (cw + .18);
           K.card(s, bx, 1.55, cw, 5.3); s.addShape(p.ShapeType.roundRect, { x: bx + .15, y: 1.7, w: cw - .3, h: 4.3, rectRadius: .1, fill: { color: 'EEF1F6' }, line: { type: 'none' } });
           if (d) { const dm = await imgDims(d); if (dm) { const k2 = Math.min((cw - .3) / dm.w, 4.3 / dm.h), w = dm.w * k2, h = dm.h * k2; s.addImage({ data: d, x: bx + .15 + (cw - .3 - w) / 2, y: 1.7 + (4.3 - h) / 2, w, h }); } }
